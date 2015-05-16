@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace DiagnosisProjects.HittingSet.Unittests
 {
-    class HSUnittest_1
+
+    public class HSUnittest_1
     {
         public static void RunTest()
         {
@@ -23,6 +24,10 @@ namespace DiagnosisProjects.HittingSet.Unittests
             conflictSet.Conflicts = new List<Conflict> { con1, con2 };
 
             HittingSetFinder.FindHittingSets(conflictSet);
+
         }
+
+
+
     }
 }

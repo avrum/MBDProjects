@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DiagnosisProjects.HittingSet
 {
-    class HSTreeNode
+    class HSTreeNode : IComparable<HSTreeNode>
     {
 
         #region Properties
@@ -31,6 +31,41 @@ namespace DiagnosisProjects.HittingSet
         }
 
         #endregion
+
+        public int CompareTo(HSTreeNode other)
+        {
+            if (PathLabel.CompareTo(other.PathLabel) == 0)
+            {
+                //Have sane path level..
+                //now check if have same Conflict
+
+                bool eq =Enumerable.SequenceEqual(Conflict.TheConflict.OrderBy(t => t), other.Conflict.TheConflict.OrderBy(t => t));
+                if(eq)
+                {
+                    return 0;
+                }
+                return 1;
+            }
+            return 1;
+        }
+
+
+
+        public string ToString()
+        {
+            StringBuilder sB = new StringBuilder();
+            sB.Append("Conflict: ");
+            for (int i = 0; i < Conflict.TheConflict.Count - 1; i++)
+            {
+                sB.Append(Conflict.TheConflict[i].Id + ", ");
+            }
+            sB.Append(Conflict.TheConflict[Conflict.TheConflict.Count - 1].Id);
+
+            sB.AppendLine("\n" + PathLabel.ToString());
+            sB.AppendLine();
+
+            return sB.ToString();
+        }
 
     }
 }

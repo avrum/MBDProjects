@@ -48,10 +48,15 @@
     <Compile Include="DiagnosisSet.cs" />
     <Compile Include="Evaluator.cs" />
     <Compile Include="Gate.cs" />
+    <Compile Include="HittingSet\Algorithms\HSMultiTasks.cs" />
+    <Compile Include="HittingSet\Algorithms\HSMultiThreads.cs" />
+    <Compile Include="HittingSet\Algorithms\IAlgorithm.cs" />
+    <Compile Include="HittingSet\Algorithms\HSOneThread.cs" />
     <Compile Include="HittingSet\HSHelper.cs" />
     <Compile Include="HittingSet\HittingSetFinder.cs" />
     <Compile Include="HittingSet\HSTreePath.cs" />
     <Compile Include="HittingSet\HSTreeNode.cs" />
+    <Compile Include="HittingSet\Unittests\HSUnittest_2.cs" />
     <Compile Include="HittingSet\Unittests\HSUnittest_1.cs" />
     <Compile Include="IDiagnoser.cs" />
     <Compile Include="ModelObservationCreator.cs" />

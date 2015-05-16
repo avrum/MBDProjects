@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DiagnosisProjects
 {
-    abstract class Gate
+    abstract class Gate : IComparable<Gate>
     {
         public int Id { get; protected set; }
         public int order { get; set; }
@@ -54,6 +54,15 @@ namespace DiagnosisProjects
                 return 1;
             else
                 return -1;
+        }
+
+        public int CompareTo(Gate other)
+        {
+            if (Id == other.Id)
+            {
+                return 0;
+            }
+            return 1;
         }
     }
 }

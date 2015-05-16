@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DiagnosisProjects.HittingSet
 {
-    class HSTreePath
+    class HSTreePath : IComparable<HSTreePath>
     {
 
         #region Properties
@@ -32,6 +32,31 @@ namespace DiagnosisProjects.HittingSet
         }
 
         #endregion
+
+        public int CompareTo(HSTreePath other)
+        {
+            if(Enumerable.SequenceEqual(Path.OrderBy(t => t), other.Path.OrderBy(t => t)))
+            {
+                return 0;
+            }
+            return 1;
+        }
+
+        public string ToString()
+        {
+            StringBuilder sB = new StringBuilder();
+            sB.Append("Path: ");
+            if (Path.Count > 0)
+            {
+                for (int i = 0; i < Path.Count - 1; i++)
+                {
+                    sB.Append(Path[i].Id + ", ");
+                }
+                sB.Append(Path[Path.Count - 1].Id);
+            }
+
+            return sB.ToString();
+        }
 
 
     }
