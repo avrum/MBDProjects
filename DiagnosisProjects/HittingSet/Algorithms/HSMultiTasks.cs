@@ -10,13 +10,13 @@ namespace DiagnosisProjects.HittingSet
 {
     class HSMultiTasks : IHSAlgorithm
     {
+        private readonly Object _expendLock = new Object();
 
-        public EventWaitHandle waitEvent = new EventWaitHandle(false, EventResetMode.AutoReset);
+        private Observation _observation;
 
-        private Object expendLock = new Object();
-
-        public DiagnosisSet FindHittingSets(ConflictSet conflicts)
+        public DiagnosisSet FindHittingSets(Observation observation, ConflictSet conflicts)
         {
+            this._observation = observation;
             return DiagnoseMainLoop(conflicts);
         }
 
@@ -105,13 +105,17 @@ namespace DiagnosisProjects.HittingSet
                 }
                 else
                 {
-                    //TODO: CHECKCONSISTENCY......
                     //consistency checker, which tests if the new node is a diagnosis or returns a minimal conflict otherwise.
-                    Conflict conFromCheckConsistensy = null;
-                    node.Conflict = conFromCheckConsistensy;
+                    bool IsDiagnosis = ConstraintSystemSolver.Instance.CheckConsistensy(_observation, node.PathLabel.Path);
+
+                    //If its not a diagnosis we add it as a conflict
+                    if (!IsDiagnosis)
+                    {
+                        node.Conflict = new Conflict(node.PathLabel.Path);
+                    }
                 }
 
-                lock (expendLock)
+                lock (_expendLock)
                 {
 
                     if (node.Conflict != null && node.Conflict.TheConflict.Count > 0)

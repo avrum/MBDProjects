@@ -97,7 +97,12 @@ namespace DiagnosisProjects
 
         public override void AddConstaint()
         {
-            throw new NotImplementedException();
+            List<Gate> conGates = cone.Components;
+
+            foreach (Gate gate in conGates)
+            {
+                gate.AddConstaint();
+            }
         }
     }
 }

@@ -103,13 +103,12 @@ namespace DiagnosisProjects
                     case Type.nor:
                         consType = Type.or;
                         break;
-
-                        //TODO: XOR
-                        /*
-                        case Type.nor:
-                        consType = Type.or;
+                    case Type.xor:
+                        consType = Type.nxor;
                         break;
-                         */
+                    case Type.nxor:
+                        consType = Type.xor;
+                        break;
                 }
             }
 
@@ -132,9 +131,24 @@ namespace DiagnosisProjects
                     constraint = solver.Equal(allOrInputs, outputTerm);
                     break;
                 case Type.xor:
-                    //TODO: FIX XOR GATE
-                    CspTerm allXorInputs = solver.Or(inputTerms);
-                    constraint = solver.Equal(allXorInputs, outputTerm);
+                    //XOR is also:
+                    //http://en.wikipedia.org/wiki/XOR_gate#/media/File:254px_3gate_XOR.jpg
+
+                    CspTerm firstNand = solver.Not(solver.And(inputTerms));
+                    CspTerm firstOr = solver.Or(inputTerms);
+                    CspTerm secendAnd = solver.And(firstNand, firstOr);
+
+                    constraint = solver.Equal(secendAnd, outputTerm);
+                    break;
+                case Type.nxor:
+                    //XOR is also:
+                    //http://en.wikipedia.org/wiki/XOR_gate#/media/File:254px_3gate_XOR.jpg
+
+                    CspTerm firstNand2 = solver.Not(solver.And(inputTerms));
+                    CspTerm firstOr2 = solver.Or(inputTerms);
+                    CspTerm secendAnd2 = solver.And(firstNand2, firstOr2);
+
+                    constraint = solver.Equal(secendAnd2, solver.Not(outputTerm));
                     break;
             }
 

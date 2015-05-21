@@ -8,13 +8,13 @@ namespace DiagnosisProjects.HittingSet
 {
     class HittingSetFinder
     {
-        public static DiagnosisSet FindHittingSets(ConflictSet conflicts)
+        public static DiagnosisSet FindHittingSets(Observation observation, ConflictSet conflicts)
         {
             IHSAlgorithm s = new HSOneThread();
             //IHSAlgorithm s = new  HSMultiThreads();
             //IHSAlgorithm s = new HSMultiTasks();
 
-            return s.FindHittingSets(conflicts);
+            return s.FindHittingSets(observation , conflicts);
         }
     }
 }

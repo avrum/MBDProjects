@@ -13,7 +13,7 @@ namespace DiagnosisProjects
         public double P { get; set; }
         public double Cost { get; set; }
         public bool IsBroken { get; set; } // needed for the SAT - consistency test
-        public enum Type {and, or, xor, nor, nand, buffer, not, cone}
+        public enum Type {and, or, xor, nxor, nor, nand, buffer, not, cone}
         protected Type type;
         private Wire output;
         public virtual Wire Output {

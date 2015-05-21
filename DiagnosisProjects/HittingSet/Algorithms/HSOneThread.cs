@@ -8,8 +8,11 @@ namespace DiagnosisProjects.HittingSet
 {
     class HSOneThread : IHSAlgorithm
     {
-        public DiagnosisSet FindHittingSets(ConflictSet conflicts)
+        private Observation observation;
+
+        public DiagnosisSet FindHittingSets(Observation observation, ConflictSet conflicts)
         {
+            this.observation = observation;
             return DiagnoseMainLoop(conflicts);
         }
 
@@ -80,10 +83,14 @@ namespace DiagnosisProjects.HittingSet
                 }
                 else
                 {
-                    //TODO: CHECKCONSISTENCY......
                     //consistency checker, which tests if the new node is a diagnosis or returns a minimal conflict otherwise.
-                    Conflict conFromCheckConsistensy = null;
-                    node.Conflict = conFromCheckConsistensy;
+                    bool IsDiagnosis = ConstraintSystemSolver.Instance.CheckConsistensy(observation, node.PathLabel.Path);
+                    
+                    //If its not a diagnosis we add it as a conflict
+                    if (!IsDiagnosis)
+                    {
+                        node.Conflict = new Conflict(node.PathLabel.Path);
+                    }
                 }
 
                 if (node.Conflict != null && node.Conflict.TheConflict.Count > 0)

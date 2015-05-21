@@ -10,13 +10,15 @@ namespace DiagnosisProjects.HittingSet
 {
     class HSMultiThreads : IHSAlgorithm
     {
+        private readonly EventWaitHandle _waitEvent = new EventWaitHandle(false, EventResetMode.AutoReset);
 
-        public EventWaitHandle waitEvent = new EventWaitHandle(false, EventResetMode.AutoReset);
+        private readonly Object _expendLock = new Object();
 
-        private Object expendLock = new Object();
+        private Observation _observation;
 
-        public DiagnosisSet FindHittingSets(ConflictSet conflicts)
+        public DiagnosisSet FindHittingSets(Observation observation, ConflictSet conflicts)
         {
+            this._observation = observation;
             return DiagnoseMainLoop(conflicts);
         }
 
@@ -68,7 +70,7 @@ namespace DiagnosisProjects.HittingSet
                     System.Diagnostics.Debug.WriteLine(node.ToString());
                 }*/
 
-                waitEvent.WaitOne();
+                _waitEvent.WaitOne();
 
                 size = nodesToExpand.Count;
             }
@@ -104,13 +106,17 @@ namespace DiagnosisProjects.HittingSet
                 }
                 else
                 {
-                    //TODO: CHECKCONSISTENCY......
                     //consistency checker, which tests if the new node is a diagnosis or returns a minimal conflict otherwise.
-                    Conflict conFromCheckConsistensy = null;
-                    node.Conflict = conFromCheckConsistensy;
+                    bool IsDiagnosis = ConstraintSystemSolver.Instance.CheckConsistensy(_observation, node.PathLabel.Path);
+
+                    //If its not a diagnosis we add it as a conflict
+                    if (!IsDiagnosis)
+                    {
+                        node.Conflict = new Conflict(node.PathLabel.Path);
+                    }
                 }
 
-                lock (expendLock)
+                lock (_expendLock)
                 {
 
                     if (node.Conflict != null && node.Conflict.TheConflict.Count > 0)
@@ -154,7 +160,7 @@ namespace DiagnosisProjects.HittingSet
 
             }
 
-            waitEvent.Set(); 
+            _waitEvent.Set(); 
 
         }
 

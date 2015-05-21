@@ -23,7 +23,7 @@ namespace DiagnosisProjects.HittingSet.Unittests
             ConflictSet conflictSet = new ConflictSet();
             conflictSet.Conflicts = new List<Conflict> { con1, con2 };
 
-            HittingSetFinder.FindHittingSets(conflictSet);
+            HittingSetFinder.FindHittingSets(null, conflictSet);
 
         }
 

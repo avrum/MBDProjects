@@ -8,6 +8,6 @@ namespace DiagnosisProjects.HittingSet
 {
     interface IHSAlgorithm
     {
-        DiagnosisSet FindHittingSets(ConflictSet conflicts);
+        DiagnosisSet FindHittingSets(Observation observation, ConflictSet conflicts);
     }
 }

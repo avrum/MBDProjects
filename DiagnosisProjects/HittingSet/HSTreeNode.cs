@@ -51,7 +51,7 @@ namespace DiagnosisProjects.HittingSet
 
 
 
-        public string ToString()
+        public new string ToString()
         {
             StringBuilder sB = new StringBuilder();
             sB.Append("Conflict: ");
