@@ -12,6 +12,7 @@ namespace DiagnosisProjects
         public int order { get; set; }
         public double P { get; set; }
         public double Cost { get; set; }
+        public bool IsBroken { get; set; } // needed for the SAT - consistency test
         public enum Type {and, or, xor, nor, nand, buffer, not, cone}
         protected Type type;
         private Wire output;
@@ -64,5 +65,7 @@ namespace DiagnosisProjects
             }
             return 1;
         }
+
+        public abstract void AddConstaint();
     }
 }

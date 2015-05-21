@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.SolverFoundation.Solvers;
 
 namespace DiagnosisProjects
 {
@@ -33,6 +34,42 @@ namespace DiagnosisProjects
             else if (type == Type.not)
                 return !Input1.Value;
             return false;
+        }
+
+        public override void AddConstaint()
+        {
+            ConstraintSystem solver = ConstraintSystemSolver.Instance.Solver;
+            CspTerm constraint = null;
+
+            CspTerm inputTerm = Input1.GetTerm();
+            CspTerm outputTerm = Output.GetTerm();
+
+
+            Type consType = type;
+            if (IsBroken)
+            {
+                switch (type)
+                {
+                    case Type.buffer:
+                        consType = Type.not;
+                        break;
+                    case Type.not:
+                        consType = Type.buffer;
+                        break;
+                }
+            }
+
+            switch (consType)
+            {
+                case Type.buffer:
+                    constraint = solver.Equal(inputTerm, outputTerm);
+                    break;
+                case Type.not:
+                    constraint = solver.Equal(inputTerm, solver.Not(outputTerm));
+                    break;
+            }
+
+            solver.AddConstraints(constraint);
         }
     }
 }
