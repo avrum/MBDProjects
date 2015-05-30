@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,7 +49,16 @@ namespace DiagnosisProjects
         {
             this.Id = id;
             this.Type = type;
-            this.term = ConstraintSystemSolver.Instance.Solver.CreateBoolean(id);
+            try
+            {
+                this.term = ConstraintSystemSolver.Instance.Solver.CreateBoolean(id);
+            }
+            catch
+            {
+                Debug.WriteLine("Error - Wire with the same ID {id=" +id+ "} has already been created");
+                this.term = ConstraintSystemSolver.Instance.Solver.CreateBoolean();
+            }
+            
         }
         public void AddOutputComponent(Gate Component)
         {
