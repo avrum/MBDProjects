@@ -10,6 +10,7 @@ namespace DiagnosisProjects
     {
         static void Main(string[] args)
         {
+
         }
     }
 }

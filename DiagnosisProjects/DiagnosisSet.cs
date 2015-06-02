@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DiagnosisProjects
 {
-    class DiagnosisSet
+    class DiagnosisSet :Sets
     {
         public List<Diagnosis> Diagnoses { get; private set; }
         public double SetProbability { get; set; }

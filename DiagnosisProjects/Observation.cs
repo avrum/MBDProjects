@@ -13,7 +13,7 @@ namespace DiagnosisProjects
         public bool[] OutputValues { get; set; }
         public Dictionary<Wire, bool> CorrectValues { get; private set; }
         private SystemModel model;
-        public SystemModel TheModel 
+        public SystemModel TheModel
         { 
             get
             {

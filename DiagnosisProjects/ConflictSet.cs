@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DiagnosisProjects
 {
-    class ConflictSet
+    class ConflictSet: Sets
     {
         public List<Conflict> Conflicts { get; set; }
     }

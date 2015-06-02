@@ -10,6 +10,6 @@ namespace DiagnosisProjects
     {
         DiagnosisSet FindDiagnoses(Observation observation);
         ConflictSet FindConflicts(Observation observation);
-        DiagnosisSet FindHittingSets(ConflictSet conflicts);
+        Sets FindHittingSets(ConflictSet conflicts);
     }
 }
