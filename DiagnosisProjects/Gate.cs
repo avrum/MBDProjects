@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace DiagnosisProjects
 {
-    abstract class Gate
+    abstract class Gate : IComparable<Gate>
     {
         public int Id { get; protected set; }
         public int order { get; set; }
         public double P { get; set; }
         public double Cost { get; set; }
-        public enum Type {and, or, xor, nor, nand, buffer, not, cone}
+        public bool IsBroken { get; set; } // needed for the SAT - consistency test
+        public enum Type {and, or, xor, nxor, nor, nand, buffer, not, cone}
         protected Type type;
         private Wire output;
         public virtual Wire Output {
@@ -55,5 +56,16 @@ namespace DiagnosisProjects
             else
                 return -1;
         }
+
+        public int CompareTo(Gate other)
+        {
+            if (Id == other.Id)
+            {
+                return 0;
+            }
+            return 1;
+        }
+
+        public abstract void AddConstaint();
     }
 }

@@ -9,5 +9,10 @@ namespace DiagnosisProjects
     class Conflict
     {
         public List<Gate> TheConflict { get; private set; }
+
+        public Conflict(List<Gate> conflict)
+        {
+            this.TheConflict = conflict;
+        }
     }
 }

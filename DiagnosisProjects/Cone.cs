@@ -50,6 +50,7 @@ namespace DiagnosisProjects
                 g.SetValue();
             }
         }
+
         public void SetInputOutputComponents()
         {
             if(cone==null || cone.Components== null|| cone.Components.Count==0)
@@ -91,6 +92,16 @@ namespace DiagnosisProjects
                             cone.OutputComponents.Add(Component);
                     }
                 }
+            }
+        }
+
+        public override void AddConstaint()
+        {
+            List<Gate> conGates = cone.Components;
+
+            foreach (Gate gate in conGates)
+            {
+                gate.AddConstaint();
             }
         }
     }
