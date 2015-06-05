@@ -8,7 +8,7 @@ using Microsoft.SolverFoundation.Solvers;
 
 namespace DiagnosisProjects
 {
-    class Wire
+    public class Wire
     {
         public enum WireType { i, o, z };
         public int Id { get; private set; }

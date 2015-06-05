@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DiagnosisProjects
 {
-    class DiagnosisSet :Sets
+    public class DiagnosisSet :Sets
     {
         public List<Diagnosis> Diagnoses { get; private set; }
         public double SetProbability { get; set; }
@@ -36,6 +36,16 @@ namespace DiagnosisProjects
                     diagnosis.CalcAndSetProb();
                 SetProbability += diagnosis.Probability;
             }
+        }
+
+        public override List<CompSet> getSets()
+        {
+            List<CompSet> ans = base.getSets();
+            foreach (Diagnosis diagnosis in Diagnoses)
+            {
+                ans.Add(diagnosis);
+            }
+            return ans;
         }
     }
 }

@@ -7,7 +7,7 @@ using System.IO;
 
 namespace DiagnosisProjects
 {
-    class ModelObservationCreator
+    public class ModelObservationCreator
     {
         public ModelObservationCreator()
         {
@@ -295,16 +295,20 @@ namespace DiagnosisProjects
             if (compArr.Length >= 5)
             {
                 MultipleInputComponent ans = null;
+
                 if (compArr[0].StartsWith("and"))
                     ans = new MultipleInputComponent(id, Gate.Type.and);
-                if (compArr[0].StartsWith("nor"))
+                else if (compArr[0].StartsWith("nor"))
                     ans = new MultipleInputComponent(id, Gate.Type.nor);
-                if (compArr[0].StartsWith("xor"))
+                else if (compArr[0].StartsWith("xor"))
                     ans = new MultipleInputComponent(id, Gate.Type.xor);
-                if (compArr[0].StartsWith("nand"))
+                else if (compArr[0].StartsWith("nand"))
                     ans = new MultipleInputComponent(id, Gate.Type.nand);
-                if (compArr[0].StartsWith("or"))
+                else if (compArr[0].StartsWith("or"))
                     ans = new MultipleInputComponent(id, Gate.Type.or);
+                else if (compArr[0].StartsWith("nxor"))
+                    ans = new MultipleInputComponent(id, Gate.Type.nxor);
+
                 if (ans != null)
                 {
                     if (output != null)

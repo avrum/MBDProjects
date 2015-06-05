@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DiagnosisProjects
 {
-    class Evaluator
+    public class Evaluator
     {
         public void Probing(Observation observation, DiagnosisSet diagnoses, List<Gate> RealFaulty)
         {

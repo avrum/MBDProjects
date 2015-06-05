@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DiagnosisProjects
 {
-    class Observation
+    public class Observation
     {
         public int Id { get; private set; }
         public bool[] InputValues { get; set; }

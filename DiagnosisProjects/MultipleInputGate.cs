@@ -7,7 +7,7 @@ using Microsoft.SolverFoundation.Solvers;
 
 namespace DiagnosisProjects
 {
-    class MultipleInputComponent:Gate
+    public class MultipleInputComponent:Gate
     {
         public List<Wire> Input;
 
@@ -68,6 +68,16 @@ namespace DiagnosisProjects
                     if (t % 2 == 0)
                         return false;
                     return true;
+                case Type.nxor:
+                    t=0;
+                    foreach (Wire wire in Input)
+                    {
+                        if (wire.Value == true)
+                            t++;
+                    }
+                    if (t % 2 == 0)
+                        return true;
+                    return false;
             }
             return false;
 

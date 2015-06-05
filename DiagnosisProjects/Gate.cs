@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DiagnosisProjects
 {
-    abstract class Gate : IComparable<Gate>
+    public abstract class Gate : IComparable<Gate>
     {
         public int Id { get; protected set; }
         public int order { get; set; }
