@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,7 +34,7 @@ namespace DiagnosisProjects
         }
 
         /// <summary>
-        ///  If true its a diagnose
+        ///  If true its a diagnosis
         //   If false its a conflict
         /// </summary>
         /// <param name="observation"></param>
@@ -75,9 +76,14 @@ namespace DiagnosisProjects
             ConstraintSolverSolution solution = Solver.Solve();
 
 
-            // If true its a diagnose
+            // If true its a diagnosis
             // If false its a conflict
             bool explainOutput = solution.HasFoundSolution;
+
+            if (!explainOutput)
+            {
+                Debug.WriteLine("SAT Doesn't found a solution. The new node is N-O-T a diagnosis!");
+            }
 
             //Reset
             instance = null;
