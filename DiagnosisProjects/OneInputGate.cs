@@ -41,8 +41,8 @@ namespace DiagnosisProjects
             ConstraintSystem solver = ConstraintSystemSolver.Instance.Solver;
             CspTerm constraint = null;
 
-            CspTerm inputTerm = Input1.GetTerm();
-            CspTerm outputTerm = Output.GetTerm();
+            CspTerm inputTerm = Input1.CspTerm;
+            CspTerm outputTerm = Output.CspTerm;
 
 
             Type consType = type;

@@ -11,6 +11,7 @@ namespace DiagnosisProjects
     {
         private static ConstraintSystemSolver instance;
         public ConstraintSystem Solver { get; private set; }
+        private static Dictionary<Wire, CspTerm> wireTermsDictionary;
 
         public static ConstraintSystemSolver Instance
         {
@@ -19,6 +20,7 @@ namespace DiagnosisProjects
                 if (instance == null)
                 {
                     instance = new ConstraintSystemSolver();
+                    wireTermsDictionary = new Dictionary<Wire, CspTerm>(); 
                 }
 
                 return instance;   
@@ -39,12 +41,14 @@ namespace DiagnosisProjects
         /// <returns></returns>
         public bool CheckConsistensy(Observation observation, List<Gate> posibleConflict)
         {
+
             // Set broken gates
             foreach (Gate gate in posibleConflict)
             {
                 gate.IsBroken = true;
             }
 
+            /*
             // Add input constrain
             List<Wire> allInputWires = observation.TheModel.Input;
             foreach (Wire wire in allInputWires)
@@ -59,7 +63,7 @@ namespace DiagnosisProjects
             {
                 Solver.AddConstraints(wire.GetTerm());
             }
-
+            */
 
             // Add components constrain
             List<Gate> allSystemGates = observation.TheModel.Components;
@@ -76,7 +80,9 @@ namespace DiagnosisProjects
             bool explainOutput = solution.HasFoundSolution;
 
             //Reset
-            Solver.ResetSolver();
+            instance = null;
+            ConstraintSystemSolver newSolver = ConstraintSystemSolver.Instance;
+            wireTermsDictionary.Clear();
 
             //Revert broken
             foreach (Gate gate in posibleConflict)
@@ -86,5 +92,38 @@ namespace DiagnosisProjects
 
             return explainOutput;
         }
+
+        public CspTerm AddWireTerm(Wire wire)
+        {
+
+            if (!wireTermsDictionary.ContainsKey(wire))
+            {
+                CspTerm term = Solver.CreateBoolean();
+
+                if (wire.Type == Wire.WireType.i)
+                {
+                    if (wire.Value)
+                    {
+                        term = Solver.True;
+                    }
+                    else
+                    {
+                        term = Solver.False;
+                    }
+                }
+                else
+                {
+                    term = Solver.CreateBoolean();
+                }
+
+                wire.CspTerm = term;
+
+                wireTermsDictionary.Add(wire, term);
+            }
+
+            return wireTermsDictionary[wire];
+        }
+
+
     }
 }
