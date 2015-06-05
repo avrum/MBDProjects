@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace DiagnosisProjects
 {
-    public class Sets
+    public class CompSet
     {
-        public virtual List<CompSet> getSets()
+        public virtual List<Gate> getComponents()
         {
-            return new List<CompSet>();
+            return new List<Gate>();
         }
     }
 }

@@ -7,7 +7,7 @@ using System.IO;
 
 namespace DiagnosisProjects
 {
-    class ModelObservationCreator
+    public class ModelObservationCreator
     {
         public ModelObservationCreator()
         {

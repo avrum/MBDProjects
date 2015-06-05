@@ -6,8 +6,18 @@ using System.Threading.Tasks;
 
 namespace DiagnosisProjects
 {
-    class ConflictSet: Sets
+    public class ConflictSet: Sets
     {
         public List<Conflict> Conflicts { get; set; }
+
+        public override List<CompSet> getSets()
+        {
+            List<CompSet> ans = base.getSets();
+            foreach (Conflict conflict in Conflicts)
+            {
+                ans.Add(conflict);
+            }
+            return ans;
+        }
     }
 }

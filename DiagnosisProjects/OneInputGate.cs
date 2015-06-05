@@ -7,7 +7,7 @@ using Microsoft.SolverFoundation.Solvers;
 
 namespace DiagnosisProjects
 {
-    class OneInputComponent: Gate
+    public class OneInputComponent: Gate
     {
         private Wire input1;
         public Wire Input1

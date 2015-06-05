@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DiagnosisProjects
 {
-    class Diagnosis
+    public class Diagnosis : CompSet
     {
         public List<Gate> TheDiagnosis { get; private set; }
         public double Probability { get; private set; }
@@ -57,6 +57,12 @@ namespace DiagnosisProjects
         {
             if (prob >= 0)
                 this.Probability = prob;
+        }
+
+        public override List<Gate> getComponents()
+        {
+            //return base.getComponents();
+            return TheDiagnosis;
         }
     }
 }

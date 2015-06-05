@@ -5,8 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace DiagnosisProjects
-{
-    class SystemModel
+{ 
+    public class SystemModel
     {
         public string Id { get; private set; }
         public List<Wire> Internal; 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DiagnosisProjects
 {
-    class Cone: Gate //multiple
+    public class Cone: Gate //multiple
     {
         public SystemModel cone { get; set; }
 
