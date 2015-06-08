@@ -16,13 +16,28 @@ namespace DiagnosisProjects
             TheDiagnosis = new List<Gate>();
             Probability = 0;
         }
-        public Diagnosis(List<Gate> diagnosis)
+        public Diagnosis(List<Gate> diagnosis)//not a copy constructor
         {
             if (diagnosis != null)
                 TheDiagnosis = diagnosis;
             else
                 TheDiagnosis = new List<Gate>();
             Probability = 0;
+        }
+        public Diagnosis(Diagnosis toCopy)//copy Constructor
+        {
+            if(toCopy!=null&&toCopy.TheDiagnosis!=null)
+            {
+                this.TheDiagnosis = new List<Gate>(toCopy.TheDiagnosis);
+                Probability = toCopy.Probability;
+            }
+                
+            else
+            {
+                TheDiagnosis = new List<Gate>();
+                Probability = 0;
+            }
+         
         }
         public Diagnosis(List<Gate> diagnosis, double probability):this(diagnosis)
         {
