@@ -62,6 +62,7 @@
     <Compile Include="HittingSet\HittingSetFinder.cs" />
     <Compile Include="HittingSet\HSTreePath.cs" />
     <Compile Include="HittingSet\HSTreeNode.cs" />
+    <Compile Include="HittingSet\Unittests\HSUnittest_3.cs" />
     <Compile Include="HittingSet\Unittests\HSUnittest_2.cs" />
     <Compile Include="HittingSet\Unittests\HSUnittest_1.cs" />
     <Compile Include="IDiagnoser.cs" />
