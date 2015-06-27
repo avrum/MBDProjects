@@ -10,7 +10,7 @@ namespace DiagnosisProjects
     {
         public int Id { get; protected set; }
         public int order { get; set; }
-        public double P { get; set; }
+        public double P { get; set; } // pre determined probability for fault
         public double Cost { get; set; }
         public bool IsBroken { get; set; } // needed for the SAT - consistency test
         public enum Type {and, or, xor, nxor, nor, nand, buffer, not, cone}
