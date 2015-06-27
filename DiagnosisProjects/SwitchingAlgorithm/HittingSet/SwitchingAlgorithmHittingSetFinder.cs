@@ -1,81 +1,116 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.SolverFoundation.Services;
 
 namespace DiagnosisProjects.SwitchingAlgorithm.HittingSet
 {
     class SwitchingAlgorithmHittingSetFinder
     {
+        private const int NumOfRetries = 10;
 
-        private static int NUM_OF_RETRIES = 10;
-
-        public static List<HashSet<int>> findHittingSet(List<HashSet<int>> setsList, int requiredNumOfHittinSets)
+        public static List<List<Gate>> FindHittingSet(Sets sets, int requiredNumOfHittinSets,
+            Dictionary<int, Gate> idToGate)
         {
+            List<CompSet> setsList = sets.getSets();
+
             if (setsList == null || setsList.Count == 0 || requiredNumOfHittinSets <= 0)
             {
-                return new List<HashSet<int>>();
+                return new List<List<Gate>>();
             }
             List<HashSet<int>> hittingSets = new List<HashSet<int>>();
-            //bool isNewHittingSetFound = true;
             int countNumberOfNoNewHitingSetFound = 0;
-         
-            while (hittingSets.Count < requiredNumOfHittinSets && countNumberOfNoNewHitingSetFound < NUM_OF_RETRIES){
-                //add first item to hitting set
-                foreach (int item in setsList[0]){
+            Random rand = new Random();
+            while (hittingSets.Count < requiredNumOfHittinSets && countNumberOfNoNewHitingSetFound < NumOfRetries)
+            {
+                int startIndexForIteration = rand.Next(0, setsList.Count);
+                //add first item to hitting set - item from first CompSet(setsList[0])
+                foreach (Gate item in setsList[startIndexForIteration].getComponents())
+                {
+                    if (countNumberOfNoNewHitingSetFound >= NumOfRetries)
+                    {
+                        break;
+                    }
                     HashSet<int> hittingSet = new HashSet<int>();
-                    hittingSet.Add(item);
-                    for (int i = 1; i < setsList.Count; i++){
-                        if (!hittingSet.Overlaps(setsList[i])){
-                            Random randomizer = new Random();
-                            int[] asArray = setsList[i].ToArray();
-                            int newItem = asArray[randomizer.Next(asArray.Length)];
+                    hittingSet.Add(item.Id);
+                    // add item from each set (if necessary)
+                    for (int j=0, i = (startIndexForIteration + 1) % setsList.Count; j < setsList.Count; i = (i + 1) % setsList.Count, j++)
+                    {
+                        HashSet<int> gatesIdsSet = GetGateIdsHashSet(setsList[i]);
+                        if (!hittingSet.Overlaps(gatesIdsSet))
+                        {
+                            int[] asArray = gatesIdsSet.ToArray();
+                            int newItem = asArray[rand.Next(asArray.Length)];
                             hittingSet.Add(newItem);
                         }
                     }
-                    HashSet<int> set = CheckIfSubSet(hittingSets, hittingSet);
-                    if (set == null) // already exist or there is a subset of this set
+
+                    bool isNewHittingSetFound = AddHittingSet(hittingSets, hittingSet);
+                    if (!isNewHittingSetFound)
                     {
-                        countNumberOfNoNewHitingSetFound++;
+                        countNumberOfNoNewHitingSetFound ++;
                     }
-                    else if (set.Equals(hittingSet))
-                    {
-                        countNumberOfNoNewHitingSetFound = 0; ;
-                        hittingSets.Add(hittingSet);
-                    } 
                     else
                     {
-                        hittingSets.Remove(set);
-                        hittingSets.Add(hittingSet);
+                        countNumberOfNoNewHitingSetFound = 0;
                     }
                 }
+
             }
-            return hittingSets;
+            return GetGateListFromHashSet(hittingSets, idToGate);
+        }
+
+        private static List<List<Gate>> GetGateListFromHashSet(List<HashSet<int>> hittingSets, Dictionary<int,Gate> idToGate)
+        {
+            List<List<Gate>> gateList = new List<List<Gate>>();
+            foreach (HashSet<int> hittingSet in hittingSets)
+            {
+                List<Gate> gates = new List<Gate>();
+                foreach (int id in hittingSet)
+                {
+                    Gate gate = idToGate[id];
+                    gates.Add(gate);
+                }
+                gateList.Add(gates);
+            }
+            return gateList;
+        }
+
+        private static HashSet<int> GetGateIdsHashSet(CompSet compSet)
+        {
+            HashSet<int> hashSet = new HashSet<int>();
+            foreach (Gate component in compSet.getComponents())
+            {
+                hashSet.Add(component.Id);
+            }
+            return hashSet;
         }
 
         //check if the new set is subset of another set or the opssite.
-        private static HashSet<int> CheckIfSubSet(List<HashSet<int>> hittingSets, HashSet<int> hittingSet)
+        // return true if new set added, false otherwise
+        private static bool AddHittingSet(List<HashSet<int>> hittingSets, HashSet<int> hittingSet)
         {
-           
+            List<HashSet<int>> superSetToRemove = new List<HashSet<int>>();
             foreach (HashSet<int> current in hittingSets)
             {
-                if (hittingSet.SetEquals(current))
+                if (hittingSet.SetEquals(current) || hittingSet.IsSupersetOf(current)) //not need to add
                 {
-                    return null; // already exist
+                    return false;
                 }
                 if (hittingSet.IsSubsetOf(current))
                 {
-                    return current; //need to delete current
-                }
-                if (hittingSet.IsSupersetOf(current))
-                {
-                    return null; //no need to add the new set
+                    superSetToRemove.Add(current);
                 }
             }
-            return hittingSet; // add new set - it is not superset or subset
 
+            if (superSetToRemove.Count != 0) //remove super sets
+            {
+                foreach (HashSet<int> hashSet in superSetToRemove)
+                {
+                    hittingSets.Remove(hashSet);
+                }
+            }
+            hittingSets.Add(hittingSet); // new set or subset
+            return true; 
         }
 
     }

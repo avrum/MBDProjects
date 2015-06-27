@@ -36,6 +36,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>HittingSet\Solver\Microsoft.Solver.Foundation.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -74,14 +75,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sets.cs" />
     <Compile Include="SwitchingAlgorithm\HittingSet\SwitchingAlgorithmHittingSetFinder.cs" />
-    <Compile Include="SwitchingAlgorithm\MinimizerComponent.cs" />
-    <Compile Include="SwitchingAlgorithm\SetMinimizer.cs" />
+    <Compile Include="SwitchingAlgorithm\SetMinimizer\MinimizerComponent.cs" />
+    <Compile Include="SwitchingAlgorithm\SetMinimizer\SetMinimizer.cs" />
     <Compile Include="SwitchingAlgorithm\SubSetMinimal\SetsDataStructure.cs" />
     <Compile Include="SwitchingAlgorithm\SwitchingAlgorithm.cs" />
-    <Compile Include="SwitchingAlgorithm\Trie\IPrefixMatcher.cs" />
-    <Compile Include="SwitchingAlgorithm\Trie\PrefixMatcher.cs" />
-    <Compile Include="SwitchingAlgorithm\Trie\Trie.cs" />
-    <Compile Include="SwitchingAlgorithm\Trie\TrieNode.cs" />
+    <Compile Include="SwitchingAlgorithm\UnitTesting\HittingSetFinderTest.cs" />
+    <Compile Include="SwitchingAlgorithm\UnitTesting\SetMinimizerTest.cs" />
+    <Compile Include="SwitchingAlgorithm\UnitTesting\SwitchingAlgorithmTest.cs" />
+    <Compile Include="SwitchingAlgorithm\UnitTesting\SetsDataStructureTest.cs" />
     <Compile Include="SystemModel.cs" />
     <Compile Include="Wire.cs" />
   </ItemGroup>
@@ -91,7 +92,9 @@
   <ItemGroup>
     <Content Include="HittingSet\Solver\Microsoft.Solver.Foundation.dll" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -11,77 +11,81 @@ namespace DiagnosisProjects.SwitchingAlgorithm
         private ConflictSet _conflictSet;
         private int _requiredNumOfDiagnosis;
         private ConstraintSystemSolver _constraintSystemSolver;
+        public static Dictionary<int, Gate> IdToGates = new Dictionary<int, Gate>(); 
 
 
         public SwitchingAlgorithm(Observation observation, ConflictSet initialConflictsSet, DiagnosisSet initialDiagnosisSet, int requiredNumOfDiagnosis)
         {
             this._observation = observation;
             this._constraintSystemSolver = ConstraintSystemSolver.Instance;
-            if (initialConflictsSet != null)
-            {
-                this._conflictSet = initialConflictsSet;
-            }
-            if (initialDiagnosisSet != null)
-            {
-                this._diagnosisSet = initialDiagnosisSet;
-            }
+            this._conflictSet = initialConflictsSet ?? new ConflictSet();
+            this._diagnosisSet = initialDiagnosisSet ?? new DiagnosisSet();
             this._requiredNumOfDiagnosis = requiredNumOfDiagnosis;
+            if (IdToGates.Count == 0)
+            {
+                buildIdToGateDictionary(observation.TheModel.Components);
+            }
+        }
+
+        private void buildIdToGateDictionary(List<Gate> components)
+        {
+            foreach (Gate component in components)
+            {
+                IdToGates.Add(component.Id, component);
+            }
         }
 
         //The Main Algorithm
-        public DiagnosisSet findDiagnosis()
+        public DiagnosisSet FindDiagnosis()
         {
             //Probably we will have few 'findDiagnosis' function with different 'while' condition (i.e - findDiagnosisByTime, findDiagnosisByCount,...)
             while (_diagnosisSet.Count < _requiredNumOfDiagnosis)
             {
-                findDiagnosisFromConflicts();
-                findConflictsFromDiagnosis();
+                FindDiagnosisFromConflicts();
+                FindConflictsFromDiagnosis();
             }
             return _diagnosisSet;
         }
 
-        private void findDiagnosisFromConflicts()
+        private void FindDiagnosisFromConflicts()
         {
             //hittingSet should be List<HashSet<CompSet>> but my hittingSet algoritm not yet support it
-            List<HashSet<int>> hittingSets = SwitchingAlgorithmHittingSetFinder.findHittingSet(null, 10);//null = _conflictsSet
-            foreach (HashSet<int> hittingSet in hittingSets)
+            List<List<Gate>> hittingSets = SwitchingAlgorithmHittingSetFinder.FindHittingSet(_conflictSet, 10, IdToGates);//null = _conflictsSet
+            foreach (List<Gate> hittingSet in hittingSets)
             {
-                bool isConsistent = _constraintSystemSolver.CheckConsistensy(_observation, null);//null = hittingSet (this is aviram code)
+                bool isConsistent = _constraintSystemSolver.CheckConsistensy(_observation, hittingSet);//null = hittingSet (this is aviram code)
                 if (isConsistent)
                 {
-                    addComponentToSet(_conflictSet, null);//send the hitting set as conflict 
+                    AddComponentToSet(_diagnosisSet, hittingSet, true); //it is a diagnosis
                 }
                 else
                 {
-                    Diagnosis diagnosis = new Diagnosis(getOppositeComponenetsList(null));
-                    addComponentToSet(_diagnosisSet, diagnosis);
+                    AddComponentToSet(_conflictSet, (GetOppositeComponenetsList(hittingSet)), false); //it is a conflict
                 }
             }
         }
 
-        private void findConflictsFromDiagnosis()
+        private void FindConflictsFromDiagnosis()
         {
             //hittingSet should be List<HashSet<CompSet>> but my hittingSet algoritm not yet support it
-            List<HashSet<int>> hittingSets = SwitchingAlgorithmHittingSetFinder.findHittingSet(null, 10); // null = _diagnosisSet
-            foreach (HashSet<int> hittingSet in hittingSets)
+            List<List<Gate>> hittingSets = SwitchingAlgorithmHittingSetFinder.FindHittingSet(_diagnosisSet, 10, IdToGates); // null = _diagnosisSet
+            foreach (List<Gate> hittingSet in hittingSets)
             {
-                bool isConsistent = _constraintSystemSolver.CheckConsistensy(_observation, null);// null = hittingSet
-                if (!isConsistent)
+                bool isConsistent = _constraintSystemSolver.CheckConsistensy(_observation, hittingSet);// null = hittingSet
+                if (!isConsistent) // it is 
                 {
-                    addComponentToSet(_diagnosisSet, null);//send the hitting set as diagnosis 
+                    AddComponentToSet(_conflictSet, hittingSet, false); //it is a conflict
                 }
                 else
                 {
-                    Conflict conflict = new Conflict(getOppositeComponenetsList(null));
-                    addComponentToSet(_conflictSet, conflict);
+                    AddComponentToSet(_diagnosisSet, GetOppositeComponenetsList(hittingSet), true);
                 }
             }
         }
 
-        private List<Gate> getOppositeComponenetsList(CompSet compSet)
+        private List<Gate> GetOppositeComponenetsList(List<Gate> compSetComponents)
         {
             List<Gate> allSystemComponents  = _observation.TheModel.Components;
-            List<Gate> compSetComponents = compSet.getComponents();
             List<Gate> oppositeComponenetsList = new List<Gate>();
             foreach (Gate systemComponent in allSystemComponents)
             {
@@ -93,15 +97,16 @@ namespace DiagnosisProjects.SwitchingAlgorithm
             return oppositeComponenetsList;
         }
 
-        private void addComponentToSet(Sets sets , CompSet compSet)
+        private void AddComponentToSet(Sets sets , List<Gate> gates , bool needToBeSatisfied)
         {
-            CompSet minimizedSet = minimizeCompSet();
+            CompSet minimizedSet = MinimizeCompSet(gates, needToBeSatisfied);
             //add to global diagnosis set while keepin minimal subset - using Trie
         }
 
-        private CompSet minimizeCompSet()
+        private CompSet MinimizeCompSet(List<Gate> gates , bool needToBeSatisfied)
         {
-            throw new NotImplementedException();
+            //SetMinimizer.Minimize(_observation, gates, needToBeSatisfied, 10);
+            return null;
         }
 
     }
