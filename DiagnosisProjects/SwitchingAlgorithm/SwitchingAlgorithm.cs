@@ -28,7 +28,7 @@ namespace DiagnosisProjects.SwitchingAlgorithm
             this._requiredNumOfDiagnosis = requiredNumOfDiagnosis;
         }
 
-        //The main algorithm
+        //The Main Algorithm
         public DiagnosisSet findDiagnosis()
         {
             //Probably we will have few 'findDiagnosis' function with different 'while' condition (i.e - findDiagnosisByTime, findDiagnosisByCount,...)
