@@ -15,14 +15,14 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
         private ConflictSet _initialConflictSet;
         private int NUM_OF_DIAGNOSIS_REQUIRED = 10;
 
-        [ClassInitialize]
-        public void Initialize()
+        [TestInitialize()]
+        public void Initialize() 
         {
             ModelObservationCreator modelObservationCreator = new ModelObservationCreator();
             _observations = modelObservationCreator.ReadObsModelFiles("777.txt", "777_iscas85.txt");
             _initialConflictSet = new ConflictSet();
             Conflict conflict = new Conflict(_observations[0].TheModel.Components);
-            _initialConflictSet.Conflicts.Add(conflict);
+            _initialConflictSet.Conflicts = new List<Conflict>(){conflict};
 
         }
 
