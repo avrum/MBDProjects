@@ -91,10 +91,10 @@ namespace DiagnosisProjects
             CspTerm[] inputTerms = new CspTerm[Input.Count];
             for (int i = 0; i < Input.Count; i++)
             {
-                inputTerms[i] = Input[i].GetTerm();
+                inputTerms[i] = Input[i].CspTerm;
             }
 
-            CspTerm outputTerm = Output.GetTerm();
+            CspTerm outputTerm = Output.CspTerm;
 
             Type consType = type;
             if (IsBroken)
