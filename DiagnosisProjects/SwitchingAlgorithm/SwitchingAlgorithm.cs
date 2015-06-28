@@ -49,7 +49,6 @@ namespace DiagnosisProjects.SwitchingAlgorithm
 
         private void FindDiagnosisFromConflicts()
         {
-            //hittingSet should be List<HashSet<CompSet>> but my hittingSet algoritm not yet support it
             List<List<Gate>> hittingSets = SwitchingAlgorithmHittingSetFinder.FindHittingSet(_conflictSet, 10, IdToGates);//null = _conflictsSet
             foreach (List<Gate> hittingSet in hittingSets)
             {
