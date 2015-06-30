@@ -50,6 +50,10 @@
     <Compile Include="Cone.cs" />
     <Compile Include="Conflict.cs" />
     <Compile Include="ConflictSet.cs" />
+    <Compile Include="HittingSet\Algorithms\C_MinCAlgorithm.cs" />
+    <Compile Include="HittingSet\Algorithms\IMinCAlgorithm.cs" />
+    <Compile Include="HittingSet\Algorithms\MinC_Utils.cs" />
+    <Compile Include="HittingSet\Algorithms\R_MinCAlgorithm.cs" />
     <Compile Include="HittingSet\Solver\ConstraintSystemSolver.cs" />
     <Compile Include="Diagnosis.cs" />
     <Compile Include="DiagnosisSet.cs" />
@@ -63,9 +67,13 @@
     <Compile Include="HittingSet\HittingSetFinder.cs" />
     <Compile Include="HittingSet\HSTreePath.cs" />
     <Compile Include="HittingSet\HSTreeNode.cs" />
+    <Compile Include="HittingSet\Unittests\C_MinCUnittest_1.cs" />
+    <Compile Include="HittingSet\Unittests\C_MinCUnittest_2.cs" />
     <Compile Include="HittingSet\Unittests\HSUnittest_3.cs" />
     <Compile Include="HittingSet\Unittests\HSUnittest_2.cs" />
     <Compile Include="HittingSet\Unittests\HSUnittest_1.cs" />
+    <Compile Include="HittingSet\Unittests\R_MinCUnittest_1.cs" />
+    <Compile Include="HittingSet\Unittests\R_MinCUnittest_2.cs" />
     <Compile Include="IDiagnoser.cs" />
     <Compile Include="ModelObservationCreator.cs" />
     <Compile Include="MultipleInputGate.cs" />
