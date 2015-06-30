@@ -34,7 +34,7 @@ namespace DiagnosisProjects.HittingSet
             List<HSTreeNode> newNodes = new List<HSTreeNode>();
 
             List<HSTreeNode> nodesToExpand = HSHelper.ConvertConflictSetToNodes(conflicts);
-            nodesToExpand.RemoveAt(1);
+            //nodesToExpand.RemoveAt(1);
 
             //Not sure if this should be empty or not....
             //conflicts = new ConflictSet();
