@@ -97,8 +97,12 @@ namespace DiagnosisProjects
             CspTerm outputTerm = Output.CspTerm;
 
             Type consType = type;
-            if (IsBroken)
+            if (IsNotHealthy)
             {
+                // In case the gate is Broken (Not Healthy) - we don't want to add any constraint!!!
+                return;
+
+                /*
                 switch (type)
                 {
                     case Type.and:
@@ -120,6 +124,7 @@ namespace DiagnosisProjects
                         consType = Type.xor;
                         break;
                 }
+                */
             }
 
             switch (consType)

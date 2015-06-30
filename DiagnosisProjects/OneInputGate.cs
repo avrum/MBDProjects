@@ -46,8 +46,12 @@ namespace DiagnosisProjects
 
 
             Type consType = type;
-            if (IsBroken)
+            if (IsNotHealthy)
             {
+                // In case the gate is Broken (Not Healthy) - we don't want to add any constraint!!!
+                return;
+
+                /*
                 switch (type)
                 {
                     case Type.buffer:
@@ -57,6 +61,7 @@ namespace DiagnosisProjects
                         consType = Type.buffer;
                         break;
                 }
+                */
             }
 
             switch (consType)
