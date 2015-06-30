@@ -46,7 +46,7 @@ namespace DiagnosisProjects
             // Set broken gates
             foreach (Gate gate in posibleConflict)
             {
-                gate.IsBroken = true;
+                gate.IsNotHealthy = true;
             }
 
             /*
@@ -93,7 +93,7 @@ namespace DiagnosisProjects
             //Revert broken
             foreach (Gate gate in posibleConflict)
             {
-                gate.IsBroken = false;
+                gate.IsNotHealthy = false;
             }
 
             return explainOutput;
