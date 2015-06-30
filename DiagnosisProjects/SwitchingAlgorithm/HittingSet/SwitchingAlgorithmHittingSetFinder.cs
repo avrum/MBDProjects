@@ -8,11 +8,9 @@ namespace DiagnosisProjects.SwitchingAlgorithm.HittingSet
     {
         private const int NumOfRetries = 10;
 
-        public static List<List<Gate>> FindHittingSet(Sets sets, int requiredNumOfHittinSets,
+        public static List<List<Gate>> FindHittingSet(List<List<Gate>> setsList, int requiredNumOfHittinSets,
             Dictionary<int, Gate> idToGate)
         {
-            List<CompSet> setsList = sets.getSets();
-
             if (setsList == null || setsList.Count == 0 || requiredNumOfHittinSets <= 0)
             {
                 return new List<List<Gate>>();
@@ -24,7 +22,7 @@ namespace DiagnosisProjects.SwitchingAlgorithm.HittingSet
             {
                 int startIndexForIteration = rand.Next(0, setsList.Count);
                 //add first item to hitting set - item from first CompSet(setsList[0])
-                foreach (Gate item in setsList[startIndexForIteration].getComponents())
+                foreach (Gate item in setsList[startIndexForIteration])
                 {
                     if (countNumberOfNoNewHitingSetFound >= NumOfRetries)
                     {
@@ -75,10 +73,10 @@ namespace DiagnosisProjects.SwitchingAlgorithm.HittingSet
             return gateList;
         }
 
-        private static HashSet<int> GetGateIdsHashSet(CompSet compSet)
+        private static HashSet<int> GetGateIdsHashSet(List<Gate> compSet)
         {
             HashSet<int> hashSet = new HashSet<int>();
-            foreach (Gate component in compSet.getComponents())
+            foreach (Gate component in compSet)
             {
                 hashSet.Add(component.Id);
             }

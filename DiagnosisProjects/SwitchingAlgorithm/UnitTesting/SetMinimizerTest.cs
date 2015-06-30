@@ -28,7 +28,11 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
         {
             Observation observation = _observations[0];
             List<Gate> allGates = observation.TheModel.Components;
-            List<Gate> minimizeList = SetMinimizer.SetMinimizer.Minimize(observation, allGates, false, 10);
+            List<Gate> conflict = new List<Gate>() { allGates[0]/*, allGates[3], allGates[6]*/ };
+            List<Gate> diagnosis = new List<Gate>() { allGates[5], allGates[6] };
+            bool isSatisfied1 = ConstraintSystemSolver.Instance.CheckConsistensy(observation, conflict);
+            bool isSatisfied2 = ConstraintSystemSolver.Instance.CheckConsistensy(observation, diagnosis);
+            List<Gate> minimizeList = SetMinimizer.SetMinimizer.Minimize(observation, conflict, false, 10);
             Assert.AreEqual(minimizeList.Count, 2);
         }
     }

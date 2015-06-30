@@ -42,11 +42,11 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
             gateList3.Add(gate4);
             Conflict conflict3 = new Conflict(gateList3);
 
-            ConflictSet conflictSet = new ConflictSet();
-            conflictSet.Conflicts = new List<Conflict>();
-            conflictSet.Conflicts.Add(conflict1);
-            conflictSet.Conflicts.Add(conflict2);
-            conflictSet.Conflicts.Add(conflict3);
+            List<List<Gate>> conflictSet = new List<List<Gate>>();
+            
+            conflictSet.Add(conflict1.TheConflict);
+            conflictSet.Add(conflict2.TheConflict);
+            conflictSet.Add(conflict3.TheConflict);
             List<List<Gate>> hittingSets = SwitchingAlgorithmHittingSetFinder.FindHittingSet(conflictSet, 10, idTGates);
             Assert.AreEqual(hittingSets.Count, 4);
 
@@ -66,5 +66,7 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
                 Debug.WriteLine("}");
             }
         }
+
+
     }
 }

@@ -2,7 +2,7 @@
 
 namespace DiagnosisProjects.SwitchingAlgorithm.SetMinimizer
 {
-    class SetMinimizer
+    public class SetMinimizer
     {
         // this function get some compSet (diagnosis or conflict) and returns the most minizmize set it can fiund in 'maxSteps' steps.
         // The parameter 'needToBeSatisfied' is to recognize between the search for conflict or for diagnosis: 
@@ -26,9 +26,8 @@ namespace DiagnosisProjects.SwitchingAlgorithm.SetMinimizer
                     Gate component = current.ComponentsList[i];
                     List<Gate> currentComponents = new List<Gate>(current.ComponentsList);
                     currentComponents.Remove(component);
-                    /*for debugging*/
-                   // Random rand = new Random();
-                    bool isSatisfied = ConstraintSystemSolver.Instance.CheckConsistensy(observation, currentComponents);
+                    List<Gate> setForSatSolver = needToBeSatisfied? currentComponents : SwitchingAlgorithm.GetOppositeComponenetsList(observation.TheModel.Components, currentComponents);
+                    bool isSatisfied = SwitchingAlgorithm.Solver.CheckConsistensy(observation, setForSatSolver);
                     if (isSatisfied == needToBeSatisfied)
                     {
                         childMinimizerComponent = new MinimizerComponent(currentComponents);
@@ -40,7 +39,6 @@ namespace DiagnosisProjects.SwitchingAlgorithm.SetMinimizer
                         current.LastChildIndex = i ;
                         break;
                     }
-
                 }
 
                 if (childMinimizerComponent != null)
