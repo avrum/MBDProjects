@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DiagnosisProjects.SwitchingAlgorithm.HittingSet;
 using DiagnosisProjects.SwitchingAlgorithm.SubSetMinimal;
 using Microsoft.SolverFoundation.Services;
@@ -8,34 +9,37 @@ namespace DiagnosisProjects.SwitchingAlgorithm
 {
     class SwitchingAlgorithm
     {
-        private Observation _observation;
-        private DiagnosisSet _diagnosisSet;
-        private ConflictSet _conflictSet;
-        private int _requiredNumOfDiagnosis;
+        private readonly Observation _observation;
+        private readonly int _requiredNumOfDiagnosis;
 
-        private SetsDataStructure _diagnosisesSetDataStructure;
-        private SetsDataStructure _conflictsSetDataStructure;
+        private readonly SetsDataStructure _diagnosisesSetDataStructure;
+        private readonly SetsDataStructure _conflictsSetDataStructure;
 
         public static Dictionary<int, Gate> IdToGates = new Dictionary<int, Gate>();
 
-        //public static ConstraintSystemSolverMock Solver = ConstraintSystemSolverMock.getInstance();
-        public static ConstraintSystemSolver Solver = ConstraintSystemSolver.Instance;
+        public static ConstraintSystemSolverMock Solver = ConstraintSystemSolverMock.getInstance();
+        //public static ConstraintSystemSolver Solver = ConstraintSystemSolver.Instance;
 
         public SwitchingAlgorithm(Observation observation, ConflictSet initialConflictsSet, DiagnosisSet initialDiagnosisSet, int requiredNumOfDiagnosis)
         {
+            ConflictSet conflictSet;
             this._observation = observation;
-            this._conflictSet = initialConflictsSet ?? new ConflictSet();
-            this._diagnosisSet = initialDiagnosisSet ?? new DiagnosisSet();
             this._requiredNumOfDiagnosis = requiredNumOfDiagnosis;
             this._conflictsSetDataStructure = new SetsDataStructure("Conflicts");
-            foreach (Conflict conflict in _conflictSet.Conflicts)
+            if (initialConflictsSet != null)
             {
-                _conflictsSetDataStructure.AddSet(conflict.TheConflict);
+                foreach (Conflict conflict in initialConflictsSet.Conflicts)
+                {
+                    _conflictsSetDataStructure.AddSet(conflict.TheConflict);
+                }
             }
             this._diagnosisesSetDataStructure = new SetsDataStructure("Diagnosises");
-            foreach (Diagnosis diagnosis in _diagnosisSet.Diagnoses)
+            if (initialDiagnosisSet != null)
             {
-                _diagnosisesSetDataStructure.AddSet(diagnosis.TheDiagnosis);
+                foreach (Diagnosis diagnosis in initialDiagnosisSet.Diagnoses)
+                {
+                    _diagnosisesSetDataStructure.AddSet(diagnosis.TheDiagnosis);
+                }
             }
             if (IdToGates.Count == 0)
             {
@@ -57,6 +61,8 @@ namespace DiagnosisProjects.SwitchingAlgorithm
             int diagnosisCount = _diagnosisesSetDataStructure.GetCompSets().Count;
             int conflictsCount = _conflictsSetDataStructure.GetCompSets().Count;
             bool isNewSetsFound = true;
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             //Probably we will have few 'findDiagnosis' function with different 'while' condition (i.e - findDiagnosisByTime, findDiagnosisByCount,...)
             while (isNewSetsFound && (diagnosisCount < _requiredNumOfDiagnosis))
             {
@@ -69,24 +75,25 @@ namespace DiagnosisProjects.SwitchingAlgorithm
                 diagnosisCount = newDiagnosisCount;
                 conflictsCount = newConflictsCount;
             }
-
+            sw.Stop();
+            Debug.WriteLine("Elapsed={0}", sw.Elapsed);
             return buildDiagnosisSet();
         }
 
         private DiagnosisSet buildDiagnosisSet()
         {
-            _diagnosisSet.Diagnoses.Clear();
+            DiagnosisSet diagnosisSet = new DiagnosisSet();
             foreach (List<Gate> gates in _diagnosisesSetDataStructure.GetCompSets())
             {
                 Diagnosis diagnosis = new Diagnosis(gates);
-                _diagnosisSet.AddDiagnosis(diagnosis);
+                diagnosisSet.AddDiagnosis(diagnosis);
             }
-            return _diagnosisSet;
+            return diagnosisSet;
         }
 
         private void FindDiagnosisFromConflicts()
         {
-            List<List<Gate>> hittingSets = SwitchingAlgorithmHittingSetFinder.FindHittingSet(_conflictsSetDataStructure.GetCompSets(), 10, IdToGates);
+            List<List<Gate>> hittingSets = SwitchingAlgorithmHittingSetFinder.FindHittingSet(_conflictsSetDataStructure.GetCompSets(), 1000, IdToGates);
             foreach (List<Gate> hittingSet in hittingSets)
             {
                 bool isConsistent = Solver.CheckConsistensy(_observation, hittingSet);
@@ -103,11 +110,11 @@ namespace DiagnosisProjects.SwitchingAlgorithm
 
         private void FindConflictsFromDiagnosis()
         {
-            List<List<Gate>> hittingSets = SwitchingAlgorithmHittingSetFinder.FindHittingSet(_diagnosisesSetDataStructure.GetCompSets(), 10, IdToGates); // null = _diagnosisSet
+            List<List<Gate>> hittingSets = SwitchingAlgorithmHittingSetFinder.FindHittingSet(_diagnosisesSetDataStructure.GetCompSets(), 1000, IdToGates); // null = _diagnosisSet
             foreach (List<Gate> hittingSet in hittingSets)
             {
                 List<Gate> oppositeSet = GetOppositeComponenetsList(_observation.TheModel.Components, hittingSet);
-                //bool isConsistent = Solver.CheckConsistensy(_observation, hittingSet);
+                //bool isConsistent = Solver.CheckConsistensy(Observation, hittingSet);
                 bool isConsistent = Solver.CheckConsistensy(_observation, oppositeSet);
                 if (!isConsistent) //it is a conflict
                 {
@@ -146,5 +153,13 @@ namespace DiagnosisProjects.SwitchingAlgorithm
             return minimizedGatesList;
         }
 
+    }
+
+    public static class TestingEnvironment
+    {
+        public static String SystemFile = "74181.txt";
+        public static String ObservationFile = "74181_iscas85.txt";
+        public static String DiagnosisFile = "74181_1_Diag.txt";
+        public static int ObservationIndex = 0;
     }
 }

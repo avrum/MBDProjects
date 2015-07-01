@@ -14,32 +14,33 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
 
         private List<Observation> _observations;
         private ConflictSet _initialConflictSet;
-        private int NUM_OF_DIAGNOSIS_REQUIRED = 10;
+        private int NUM_OF_DIAGNOSIS_REQUIRED = 10000;
 
         [TestInitialize()]
         public void Initialize() 
         {
             ModelObservationCreator modelObservationCreator = new ModelObservationCreator();
-            _observations = modelObservationCreator.ReadObsModelFiles("777.txt", "777_iscas85.txt");
+            _observations = modelObservationCreator.ReadObsModelFiles(TestingEnvironment.SystemFile, TestingEnvironment.ObservationFile);
             _initialConflictSet = new ConflictSet();
-            Conflict conflict = new Conflict(_observations[0].TheModel.Components);
+            Conflict conflict = new Conflict(_observations[TestingEnvironment.ObservationIndex].TheModel.Components);
             _initialConflictSet.Conflicts = new List<Conflict>(){conflict};
-
         }
 
         [TestMethod]
         public void TestFindDiagnosis()
         {
-            SwitchingAlgorithm switchingAlgorithm = new SwitchingAlgorithm(_observations[0], _initialConflictSet,
+            List<HashSet<int>> mockDiagnosisList = ConstraintSystemSolverMock.getInstance().GetDiagnosisSet();
+            SwitchingAlgorithm switchingAlgorithm = new SwitchingAlgorithm(_observations[TestingEnvironment.ObservationIndex], _initialConflictSet,
                 null, NUM_OF_DIAGNOSIS_REQUIRED);
             DiagnosisSet diagnosisSet = switchingAlgorithm.FindDiagnosis();
             printSetList(diagnosisSet);
-            List<HashSet<int>> mockDiagnosisList= ConstraintSystemSolverMock.getInstance().GetDiagnosisSet();
-            printSetList(mockDiagnosisList);
+            //printSetList(mockDiagnosisList);
+            Assert.AreEqual(diagnosisSet.Count, mockDiagnosisList.Count);
         }
 
         private static void printSetList(DiagnosisSet diagnosisSet)
         {
+            Debug.WriteLine("############ Diagnosis-Set ######################");
             foreach (Diagnosis diagnosis in diagnosisSet.Diagnoses)
             {
                 Debug.Write("{ ");
@@ -53,6 +54,7 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
 
         private static void printSetList(List<HashSet<int>> diagnosisList)
         {
+            Debug.WriteLine("############ Diagnosis-Set(from mock) ######################");
             foreach (HashSet<int> diagnosis in diagnosisList)
             {
                 Debug.Write("{ ");
