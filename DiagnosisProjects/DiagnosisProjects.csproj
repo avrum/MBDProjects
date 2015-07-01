@@ -88,6 +88,7 @@
     <Compile Include="SwitchingAlgorithm\SetMinimizer\SetMinimizer.cs" />
     <Compile Include="SwitchingAlgorithm\SubSetMinimal\SetsDataStructure.cs" />
     <Compile Include="SwitchingAlgorithm\SwitchingAlgorithm.cs" />
+    <Compile Include="SwitchingAlgorithm\SwitchingDiagnosticEngine.cs" />
     <Compile Include="SwitchingAlgorithm\UnitTesting\HittingSetFinderTest.cs" />
     <Compile Include="SwitchingAlgorithm\UnitTesting\SetMinimizerTest.cs" />
     <Compile Include="SwitchingAlgorithm\UnitTesting\SwitchingAlgorithmTest.cs" />

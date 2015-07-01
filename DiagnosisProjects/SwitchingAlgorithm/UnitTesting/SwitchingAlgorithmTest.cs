@@ -32,12 +32,56 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
             List<HashSet<int>> mockDiagnosisList = ConstraintSystemSolverMock.getInstance().GetDiagnosisSet();
             SwitchingAlgorithm switchingAlgorithm = new SwitchingAlgorithm(_observations[TestingEnvironment.ObservationIndex], _initialConflictSet,
                 null, NUM_OF_DIAGNOSIS_REQUIRED);
-            DiagnosisSet diagnosisSet = switchingAlgorithm.FindDiagnosis();
+            DiagnosisSet diagnosisSet = switchingAlgorithm.FindDiagnosis(-1);
             printSetList(diagnosisSet);
             //printSetList(mockDiagnosisList);
             Assert.AreEqual(diagnosisSet.Count, mockDiagnosisList.Count);
         }
 
+        [TestMethod]
+        public void TestFindDiagnosisHaltByFirstDiagnosis()
+        {
+            List<HashSet<int>> mockDiagnosisList = ConstraintSystemSolverMock.getInstance().GetDiagnosisSet();
+
+            DiagnosisSet diagnosisSet = SwitchingDiagnosticEngine.findDiagnosisHaltByFirstDiagnosis(_observations[TestingEnvironment.ObservationIndex], _initialConflictSet, null);
+            
+            printSetList(diagnosisSet);
+            
+            Assert.IsTrue(diagnosisSet.Count >= 1);
+        }
+
+        [TestMethod]
+        public void TestfindFirtDiagnosisHaltByQuantiy()
+        {
+            int quantity = 4;
+            List<HashSet<int>> mockDiagnosisList = ConstraintSystemSolverMock.getInstance().GetDiagnosisSet();
+
+            DiagnosisSet diagnosisSet = SwitchingDiagnosticEngine.findDiagnosisHaltByQuantiy(_observations[TestingEnvironment.ObservationIndex], _initialConflictSet, null, quantity);
+
+            printSetList(diagnosisSet);
+            //printSetList(mockDiagnosisList);
+            Assert.IsTrue(mockDiagnosisList.Count<quantity || diagnosisSet.Count >= quantity);
+        }
+
+        [TestMethod]
+        public void TestfindFirtDiagnosisHaltByTime()
+        {
+            int timeOut = 2 * 1000;
+            int epsilon = 1000;//error margin if timer is called in the begining of the while loop
+            
+            List<HashSet<int>> mockDiagnosisList = ConstraintSystemSolverMock.getInstance().GetDiagnosisSet();
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            DiagnosisSet diagnosisSet = SwitchingDiagnosticEngine.findDiagnosisHaltByTime(_observations[TestingEnvironment.ObservationIndex], _initialConflictSet, null, timeOut);
+            sw.Stop();
+            printSetList(diagnosisSet);
+            
+            bool algorithmFoundAll = diagnosisSet.Count == mockDiagnosisList.Count;
+
+            Assert.IsTrue(sw.ElapsedMilliseconds <= (timeOut + epsilon) && (algorithmFoundAll || sw.ElapsedMilliseconds>= (timeOut)));
+        }
+
+      
         private static void printSetList(DiagnosisSet diagnosisSet)
         {
             Debug.WriteLine("############ Diagnosis-Set ######################");

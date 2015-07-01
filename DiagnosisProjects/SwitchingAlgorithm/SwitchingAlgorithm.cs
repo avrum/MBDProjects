@@ -55,16 +55,25 @@ namespace DiagnosisProjects.SwitchingAlgorithm
             }
         }
 
+        
+        
+        
         //The Main Algorithm
-        public DiagnosisSet FindDiagnosis()
+        public DiagnosisSet FindDiagnosis(int timeOut)
         {
+            bool isTimeOut = false;
+
+            startTimer(timeOut, obj =>
+                {
+                    isTimeOut = true;
+                });
+            
             int diagnosisCount = _diagnosisesSetDataStructure.GetCompSets().Count;
             int conflictsCount = _conflictsSetDataStructure.GetCompSets().Count;
             bool isNewSetsFound = true;
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
+            
             //Probably we will have few 'findDiagnosis' function with different 'while' condition (i.e - findDiagnosisByTime, findDiagnosisByCount,...)
-            while (isNewSetsFound && (diagnosisCount < _requiredNumOfDiagnosis))
+            while (!isTimeOut && isNewSetsFound && (diagnosisCount < _requiredNumOfDiagnosis))
             {
                 FindDiagnosisFromConflicts();
                 FindConflictsFromDiagnosis();
@@ -75,9 +84,19 @@ namespace DiagnosisProjects.SwitchingAlgorithm
                 diagnosisCount = newDiagnosisCount;
                 conflictsCount = newConflictsCount;
             }
-            sw.Stop();
-            Debug.WriteLine("Elapsed={0}", sw.Elapsed);
             return buildDiagnosisSet();
+        }
+
+        private void startTimer(int timeOut, System.Threading.TimerCallback callback)
+        {
+            if (timeOut > 0)
+            {
+                System.Threading.Timer TimerItem = new System.Threading.Timer(
+                callback
+                , null
+                , TimeSpan.FromMilliseconds(timeOut)
+                , TimeSpan.FromMilliseconds(-1));
+            }
         }
 
         private DiagnosisSet buildDiagnosisSet()
@@ -157,9 +176,9 @@ namespace DiagnosisProjects.SwitchingAlgorithm
 
     public static class TestingEnvironment
     {
-        public static String SystemFile = "74181.txt";
-        public static String ObservationFile = "74181_iscas85.txt";
-        public static String DiagnosisFile = "74181_1_Diag.txt";
+        public static String SystemFile = "777.txt";
+        public static String ObservationFile = "777_iscas85.txt";
+        public static String DiagnosisFile = "777_1_Diag.txt";
         public static int ObservationIndex = 0;
     }
 }
