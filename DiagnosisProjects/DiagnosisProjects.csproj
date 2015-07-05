@@ -52,6 +52,7 @@
     <Compile Include="ConflictSet.cs" />
     <Compile Include="HittingSet\Algorithms\C_MinCAlgorithm.cs" />
     <Compile Include="HittingSet\Algorithms\IMinCAlgorithm.cs" />
+    <Compile Include="HittingSet\Algorithms\MicC_Diagnosis.cs" />
     <Compile Include="HittingSet\Algorithms\MinC_Utils.cs" />
     <Compile Include="HittingSet\Algorithms\R_MinCAlgorithm.cs" />
     <Compile Include="HittingSet\Solver\ConstraintSystemSolver.cs" />

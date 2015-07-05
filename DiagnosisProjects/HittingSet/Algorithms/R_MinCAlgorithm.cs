@@ -10,17 +10,19 @@ namespace DiagnosisProjects.HittingSet.Algorithms
     {
         static int infinity = int.MaxValue;
 
-        public static int FindMinC(ConflictSet conflicts)
+        public static MicC_Diagnosis FindMinC(ConflictSet conflicts)
         {
             int minc = infinity;
 
             if (MinC_Utils.isConflictSetEmpty(conflicts) == true)
             {  //1st base case
-                return 0;
+                return new MicC_Diagnosis();
             }
             else if (MinC_Utils.containEmptySet(conflicts) == true)
             { //2nd base case
-                return infinity;
+                MicC_Diagnosis infinityDiagnosis = new MicC_Diagnosis();
+                infinityDiagnosis.cardinality = infinity;
+                return infinityDiagnosis;
             }
             // Dual Reduce
 
@@ -29,9 +31,17 @@ namespace DiagnosisProjects.HittingSet.Algorithms
             ConflictSet conflictsMinusS= MinC_Utils.ConflictsMinusComponent(conflicts, s);
             ConflictSet conflictsWithoutS = MinC_Utils.ConflictsWithoutComponent(conflicts, s);
 
-            int mincWithS = FindMinC(conflictsMinusS);
-            int mincWithoutS = FindMinC(conflictsWithoutS) + 1;
-            return Math.Min(mincWithS, mincWithoutS);
+            MicC_Diagnosis mincDiagnosisNotContainS = FindMinC(conflictsMinusS);
+            MicC_Diagnosis mincDiagnosisContaintS = FindMinC(conflictsWithoutS);
+            mincDiagnosisContaintS.AddCompToDiagnosis(s);
+            if (mincDiagnosisContaintS.cardinality <= mincDiagnosisNotContainS.cardinality)
+            {
+                return mincDiagnosisContaintS;
+            }
+            else
+            {
+                return mincDiagnosisNotContainS;
+            }
 
         }
     }

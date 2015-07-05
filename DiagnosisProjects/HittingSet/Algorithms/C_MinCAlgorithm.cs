@@ -8,22 +8,27 @@ namespace DiagnosisProjects.HittingSet.Algorithms
 {
     static class C_MinCAlgorithm 
     {
-        static int minc = int.MaxValue;
-        public static int FindMinC(ConflictSet conflicts)
+        static MicC_Diagnosis mincDiagnosis = new MicC_Diagnosis();
+
+        public static MicC_Diagnosis FindMinC(ConflictSet conflicts)
         {
-            FindMinCHelper(conflicts, 0);
-            return minc;
+            int infinity = int.MaxValue;
+            mincDiagnosis.cardinality = infinity;
+
+            MicC_Diagnosis mDiagnosis = new MicC_Diagnosis();
+            FindMinCHelper(conflicts, mDiagnosis);
+            return mincDiagnosis;
         }
 
-        private static void FindMinCHelper(ConflictSet conflicts, int m)
+        private static void FindMinCHelper(ConflictSet conflicts, MicC_Diagnosis mDiagnosis)
         {
-            if (m >= minc || MinC_Utils.containEmptySet(conflicts) == true)
+            if (mDiagnosis.cardinality >= mincDiagnosis.cardinality || MinC_Utils.containEmptySet(conflicts) == true)
             { //1st & 3rd base case
                 return;
             }
             else if (MinC_Utils.isConflictSetEmpty(conflicts) == true)
             {  //2nd base case
-                minc = m;
+                mincDiagnosis = mDiagnosis;
                 return;
             }
             // Dual Reduce
@@ -33,8 +38,10 @@ namespace DiagnosisProjects.HittingSet.Algorithms
             ConflictSet conflictsMinusS = MinC_Utils.ConflictsMinusComponent(conflicts, s);
             ConflictSet conflictsWithoutS = MinC_Utils.ConflictsWithoutComponent(conflicts, s);
 
-            FindMinCHelper(conflictsMinusS, m);
-            FindMinCHelper(conflictsWithoutS, m + 1);
+            mDiagnosis.AddCompToDiagnosis(s);
+            MicC_Diagnosis diagnosisWithoutS = new MicC_Diagnosis(mDiagnosis);
+            FindMinCHelper(conflictsMinusS, diagnosisWithoutS);
+            FindMinCHelper(conflictsWithoutS, mDiagnosis);
         }
     }
 }

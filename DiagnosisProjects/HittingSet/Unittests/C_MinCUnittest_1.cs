@@ -25,10 +25,12 @@ namespace DiagnosisProjects.HittingSet.Unittests
             ConflictSet cs = new ConflictSet();
             cs.Conflicts = new List<Conflict>() { c1, c2, c3 };
 
-            int minc = C_MinCAlgorithm.FindMinC(cs);
-            Console.WriteLine("C_MinC Unit test 1. minc = " + minc);
-
-            int x = 0;
+            MicC_Diagnosis minCDiagnosis = C_MinCAlgorithm.FindMinC(cs);
+            foreach (Gate g in minCDiagnosis.TheDiagnosis)
+            {
+                Console.WriteLine("Gate = " + g.Id);
+            }
+            Console.WriteLine("C_MinC Unit test 1. minc = " + minCDiagnosis.cardinality);
         }
     }
 }
