@@ -27,7 +27,7 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
             Diagnosis set1 = new Diagnosis(gateList1);
             
             SetsDataStructure diagnosiSetsDataStructure = new SetsDataStructure("Diagnosis");
-            diagnosiSetsDataStructure.AddSet(set1);
+            diagnosiSetsDataStructure.AddSet(set1.TheDiagnosis);
             
             Assert.AreEqual(diagnosiSetsDataStructure.SetIdsToSet.Count, 1);
 
@@ -39,7 +39,7 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
             gateList2.Add(gate4);
 
             Diagnosis set2 = new Diagnosis(gateList2);
-            diagnosiSetsDataStructure.AddSet(set2);
+            diagnosiSetsDataStructure.AddSet(set2.TheDiagnosis);
 
             Assert.AreEqual(diagnosiSetsDataStructure.SetIdsToSet.Count, 2);
 
@@ -52,7 +52,7 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
             gateList3.Add(gate3);
 
             Diagnosis set3 = new Diagnosis(gateList3);
-            diagnosiSetsDataStructure.AddSet(set3);
+            diagnosiSetsDataStructure.AddSet(set3.TheDiagnosis);
 
             Assert.AreEqual(diagnosiSetsDataStructure.SetIdsToSet.Count, 2);
 
@@ -62,14 +62,14 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
             gateList4.Add(gate5);
 
             Diagnosis set4 = new Diagnosis(gateList4);
-            diagnosiSetsDataStructure.AddSet(set4);
+            diagnosiSetsDataStructure.AddSet(set4.TheDiagnosis);
 
             Assert.AreEqual(diagnosiSetsDataStructure.SetIdsToSet.Count, 2);
 
             DiagnosisSet diagnosisSet = new DiagnosisSet();
-            foreach (CompSet compSet in diagnosiSetsDataStructure.GetCompSets())
+            foreach (List<Gate> gates in diagnosiSetsDataStructure.GetCompSets())
             {
-                diagnosisSet.AddDiagnosis((Diagnosis) compSet);
+                diagnosisSet.AddDiagnosis(new Diagnosis(gates));;
             }
 
             Assert.AreEqual(diagnosiSetsDataStructure.SetIdsToSet.Count, diagnosisSet.Count);

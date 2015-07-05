@@ -28,7 +28,9 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
         {
             Observation observation = _observations[0];
             List<Gate> allGates = observation.TheModel.Components;
-            List<Gate> minimizeList = SetMinimizer.SetMinimizer.Minimize(observation, allGates, false, 10);
+            List<Gate> diadnosis = new List<Gate>() { allGates[1], allGates[6], allGates[2], allGates[3] };
+            
+            List<Gate> minimizeList = SetMinimizer.SetMinimizer.Minimize(observation, diadnosis, true, 10);
             Assert.AreEqual(minimizeList.Count, 2);
         }
     }

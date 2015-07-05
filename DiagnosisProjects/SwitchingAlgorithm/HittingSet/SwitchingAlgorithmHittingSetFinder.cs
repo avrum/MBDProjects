@@ -6,25 +6,24 @@ namespace DiagnosisProjects.SwitchingAlgorithm.HittingSet
 {
     class SwitchingAlgorithmHittingSetFinder
     {
-        private const int NumOfRetries = 10;
+        private const int NumOfRetries = 100;
 
-        public static List<List<Gate>> FindHittingSet(Sets sets, int requiredNumOfHittinSets,
-            Dictionary<int, Gate> idToGate)
+        public static List<List<Gate>> FindHittingSet(List<List<Gate>> setsList, int requiredNumOfHittinSets, Dictionary<int, Gate> idToGate)
         {
-            List<CompSet> setsList = sets.getSets();
-
             if (setsList == null || setsList.Count == 0 || requiredNumOfHittinSets <= 0)
             {
                 return new List<List<Gate>>();
             }
+
             List<HashSet<int>> hittingSets = new List<HashSet<int>>();
             int countNumberOfNoNewHitingSetFound = 0;
             Random rand = new Random();
+
             while (hittingSets.Count < requiredNumOfHittinSets && countNumberOfNoNewHitingSetFound < NumOfRetries)
             {
-                int startIndexForIteration = rand.Next(0, setsList.Count);
-                //add first item to hitting set - item from first CompSet(setsList[0])
-                foreach (Gate item in setsList[startIndexForIteration].getComponents())
+                int startIndexForIteration = rand.Next(0, setsList.Count); //random choose set for start iterate
+                //add first item to hitting set(from the coshen set)
+                foreach (Gate item in setsList[startIndexForIteration])
                 {
                     if (countNumberOfNoNewHitingSetFound >= NumOfRetries)
                     {
@@ -75,10 +74,10 @@ namespace DiagnosisProjects.SwitchingAlgorithm.HittingSet
             return gateList;
         }
 
-        private static HashSet<int> GetGateIdsHashSet(CompSet compSet)
+        private static HashSet<int> GetGateIdsHashSet(List<Gate> compSet)
         {
             HashSet<int> hashSet = new HashSet<int>();
-            foreach (Gate component in compSet.getComponents())
+            foreach (Gate component in compSet)
             {
                 hashSet.Add(component.Id);
             }
