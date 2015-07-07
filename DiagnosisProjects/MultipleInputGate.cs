@@ -16,6 +16,12 @@ namespace DiagnosisProjects
             Input.Add(wire);
             wire.AddOutputComponent(this);
         }
+
+        public override List<Wire> getInput()
+        {
+            return this.Input;
+        }
+
         public MultipleInputComponent(int id, Type type)
         {
             this.Id = id;

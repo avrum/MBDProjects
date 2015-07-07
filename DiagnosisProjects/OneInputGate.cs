@@ -27,6 +27,13 @@ namespace DiagnosisProjects
             this.Id = id;
             this.type = type;
         }
+
+        public override List<Wire> getInput() {
+            List<Wire> i = new List<Wire>();
+            i.Add(input1);
+            return i;
+             }
+
         public override bool GetValue()
         {
             if (type == Type.buffer)

@@ -66,6 +66,10 @@
     <Compile Include="HittingSet\Unittests\HSUnittest_2.cs" />
     <Compile Include="HittingSet\Unittests\HSUnittest_1.cs" />
     <Compile Include="IDiagnoser.cs" />
+    <Compile Include="LTMS\Atomic.cs" />
+    <Compile Include="LTMS\Clouse.cs" />
+    <Compile Include="LTMS\Cnf.cs" />
+    <Compile Include="LTMS\LtmsAlgorithm.cs" />
     <Compile Include="ModelObservationCreator.cs" />
     <Compile Include="MultipleInputGate.cs" />
     <Compile Include="Observation.cs" />
