@@ -21,10 +21,10 @@ namespace DiagnosisProjects
                 if (instance == null)
                 {
                     instance = new ConstraintSystemSolver();
-                    wireTermsDictionary = new Dictionary<Wire, CspTerm>(); 
+                    wireTermsDictionary = new Dictionary<Wire, CspTerm>();
                 }
 
-                return instance;   
+                return instance;
             }
         }
 
@@ -46,7 +46,7 @@ namespace DiagnosisProjects
             // Set broken gates
             foreach (Gate gate in posibleConflict)
             {
-                gate.IsBroken = true;
+                gate.IsNotHealthy = true;
             }
 
             /*
@@ -93,7 +93,7 @@ namespace DiagnosisProjects
             //Revert broken
             foreach (Gate gate in posibleConflict)
             {
-                gate.IsBroken = false;
+                gate.IsNotHealthy = false;
             }
 
             return explainOutput;
@@ -122,7 +122,7 @@ namespace DiagnosisProjects
                     term = Solver.CreateBoolean();
                 }
 
-                wire.CspTerm = term;
+                wire.term = term;
 
                 wireTermsDictionary.Add(wire, term);
             }

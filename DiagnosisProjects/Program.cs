@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DiagnosisProjects.HittingSet;
+using DiagnosisProjects.SwitchingAlgorithm;
+using DiagnosisProjects.SwitchingAlgorithm.HittingSet;
+using Microsoft.SolverFoundation.Services;
 using Microsoft.SolverFoundation.Solvers;
 using DiagnosisProjects.LTMS;
 
@@ -12,20 +15,46 @@ namespace DiagnosisProjects
     class Program
     {
         static void Main(string[] args)
-        {
-            ModelObservationCreator cc = new ModelObservationCreator();
-            List<Observation> a = cc.ReadObsModelFiles("777.txt", "777_iscas85.txt");
-            //List<Observation> a = cc.ReadObsModelFiles("74181.txt", "74181_iscas85.txt");
-            SystemModel ss = a[0].TheModel;
-            foreach (Observation o in a)
-            {
-                LtmsAlgorithm ltms = new LtmsAlgorithm(ss, o);
-                List<List<Gate>> conf = ltms.findConflicts();
-            }
-
+        {    
         }
 
 
 
+
+        private static int Comparison(Gate gate, Gate gate1)
+        {
+            if (gate.Id == gate1.Id)
+            {
+                return 0;
+            }
+            if (gate.Id > gate1.Id)
+            {
+                return 1;
+            }
+            return -1;
+        }
+
+        private static string createKeyForSet(List<Gate> gates )
+        {
+            String key = "#";
+            foreach (Gate gate in gates)
+            {
+                key += gate.Id;
+            }
+            return key;
+        }
+
+        private static void printSetList(List<HashSet<int>> hittingSets)
+        {
+            foreach (HashSet<int> hittingSet in hittingSets)
+            {
+                Console.Write("{ ");
+                foreach (int i in hittingSet)
+                {
+                    Console.Write(i + " ");
+                }
+                Console.WriteLine("}");
+            }
+        }
     }
 }

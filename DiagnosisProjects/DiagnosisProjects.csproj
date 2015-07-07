@@ -36,6 +36,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>HittingSet\Solver\Microsoft.Solver.Foundation.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,6 +50,11 @@
     <Compile Include="Cone.cs" />
     <Compile Include="Conflict.cs" />
     <Compile Include="ConflictSet.cs" />
+    <Compile Include="HittingSet\Algorithms\C_MinCAlgorithm.cs" />
+    <Compile Include="HittingSet\Algorithms\IMinCAlgorithm.cs" />
+    <Compile Include="HittingSet\Algorithms\MicC_Diagnosis.cs" />
+    <Compile Include="HittingSet\Algorithms\MinC_Utils.cs" />
+    <Compile Include="HittingSet\Algorithms\R_MinCAlgorithm.cs" />
     <Compile Include="HittingSet\Solver\ConstraintSystemSolver.cs" />
     <Compile Include="Diagnosis.cs" />
     <Compile Include="DiagnosisSet.cs" />
@@ -62,9 +68,13 @@
     <Compile Include="HittingSet\HittingSetFinder.cs" />
     <Compile Include="HittingSet\HSTreePath.cs" />
     <Compile Include="HittingSet\HSTreeNode.cs" />
+    <Compile Include="HittingSet\Unittests\C_MinCUnittest_1.cs" />
+    <Compile Include="HittingSet\Unittests\C_MinCUnittest_2.cs" />
     <Compile Include="HittingSet\Unittests\HSUnittest_3.cs" />
     <Compile Include="HittingSet\Unittests\HSUnittest_2.cs" />
     <Compile Include="HittingSet\Unittests\HSUnittest_1.cs" />
+    <Compile Include="HittingSet\Unittests\R_MinCUnittest_1.cs" />
+    <Compile Include="HittingSet\Unittests\R_MinCUnittest_2.cs" />
     <Compile Include="IDiagnoser.cs" />
     <Compile Include="LTMS\Atomic.cs" />
     <Compile Include="LTMS\Clouse.cs" />
@@ -77,6 +87,17 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sets.cs" />
+    <Compile Include="SwitchingAlgorithm\ConstraintSystemSolverMock.cs" />
+    <Compile Include="SwitchingAlgorithm\HittingSet\SwitchingAlgorithmHittingSetFinder.cs" />
+    <Compile Include="SwitchingAlgorithm\SetMinimizer\MinimizerComponent.cs" />
+    <Compile Include="SwitchingAlgorithm\SetMinimizer\SetMinimizer.cs" />
+    <Compile Include="SwitchingAlgorithm\SubSetMinimal\SetsDataStructure.cs" />
+    <Compile Include="SwitchingAlgorithm\SwitchingAlgorithm.cs" />
+    <Compile Include="SwitchingAlgorithm\SwitchingDiagnosticEngine.cs" />
+    <Compile Include="SwitchingAlgorithm\UnitTesting\HittingSetFinderTest.cs" />
+    <Compile Include="SwitchingAlgorithm\UnitTesting\SetMinimizerTest.cs" />
+    <Compile Include="SwitchingAlgorithm\UnitTesting\SwitchingAlgorithmTest.cs" />
+    <Compile Include="SwitchingAlgorithm\UnitTesting\SetsDataStructureTest.cs" />
     <Compile Include="SystemModel.cs" />
     <Compile Include="Wire.cs" />
   </ItemGroup>
@@ -85,6 +106,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="HittingSet\Solver\Microsoft.Solver.Foundation.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

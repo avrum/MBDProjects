@@ -14,7 +14,9 @@ namespace DiagnosisProjects
         public int Id { get; private set; }
         public WireType Type { get; private set; }
         private bool val;
-        private CspTerm term;
+
+        public CspTerm term;
+
 
         public bool Value 
         { 
@@ -57,11 +59,12 @@ namespace DiagnosisProjects
         }
 
 
+
         public CspTerm CspTerm
-        {
+         {
             get { return ConstraintSystemSolver.Instance.AddWireTerm(this); }
             set { term = value; }
-        }
-
+         }
+     
     }
 }
