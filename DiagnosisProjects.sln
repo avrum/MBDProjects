@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiagnosisProjects", "DiagnosisProjects\DiagnosisProjects.csproj", "{D6CDDF79-1AD7-46DC-B158-46FED28D2AE0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3A138D1F-EAE6-4F99-A912-7788F691901C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
