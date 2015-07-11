@@ -73,6 +73,12 @@ namespace DiagnosisProjects.HittingSet
                 _waitEvent.WaitOne();
 
                 size = nodesToExpand.Count;
+
+                if (size - lastSize > 3000)
+                {
+                    Debug.WriteLine("Nodes to expand over 3000! ignore this obs");
+                    return diagnosisSet;
+                }
             }
 
             return diagnosisSet;
@@ -173,11 +179,20 @@ namespace DiagnosisProjects.HittingSet
         /// <returns>Flag indicating successful addition</returns>
         private bool CheckAndAddPath(List<HSTreePath> paths, HSTreePath newPathLabel)
         {
-            if (!paths.Contains(newPathLabel))
+            try
             {
-                paths.Add(newPathLabel);
-                return true;
+                if (!paths.Contains(newPathLabel))
+                {
+                    paths.Add(newPathLabel);
+                    return true;
+                }
             }
+            catch (Exception)
+            {
+                //Getiing index out of rangle when running multiple threads
+                return false;
+            }
+
             return false;
         }
 

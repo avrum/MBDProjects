@@ -40,6 +40,21 @@ namespace DiagnosisProjects.LTMS
         }
 
 
+        public ConflictSet ConvertGateListToConflict(List<List<Gate>> conflictList)
+        {
+            ConflictSet conflictSet = new ConflictSet();
+            conflictSet.Conflicts = new List<Conflict>(); 
+
+            foreach (List<Gate> conflictGateList in conflictList)
+            {
+                Conflict conflict = new Conflict(conflictGateList);
+                conflictSet.Conflicts.Add(conflict);
+            }
+
+            return conflictSet;
+        }
+
+
         /*
         * check_conflicts implement the ltms algorithm and build this .conflicts by check for conflicts in the cnf 
         * */

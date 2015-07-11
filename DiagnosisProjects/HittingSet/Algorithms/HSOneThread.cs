@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,7 +50,31 @@ namespace DiagnosisProjects.HittingSet
                     Expand(node, c, diagnosisSet, paths, conflicts, newNodes);
                 }
 
-                nodesToExpand.AddRange(newNodes);
+
+                if (nodesToExpand.Count> 3000)
+                {
+                    Debug.WriteLine("Nodes to expand over 3000! ignore this obs");
+                    return diagnosisSet;
+                }
+
+                //Adding new nodes
+                foreach (HSTreeNode nodeToAdd in newNodes)
+                {
+                    bool foundSameNode = false;
+                    foreach (HSTreeNode existingNode in nodesToExpand)
+                    {
+                        foundSameNode = existingNode.CompareTo(nodeToAdd) == 0;
+                        if (foundSameNode)
+                        {
+                            break;
+                        }
+                    }
+                    if (!foundSameNode)
+                    {
+                        nodesToExpand.Add(nodeToAdd);
+                    }
+                }
+                //nodesToExpand.AddRange(newNodes);
             }
 
             return diagnosisSet;
