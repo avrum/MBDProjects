@@ -8,15 +8,18 @@ using DiagnosisProjects.SwitchingAlgorithm;
 using DiagnosisProjects.SwitchingAlgorithm.HittingSet;
 using Microsoft.SolverFoundation.Services;
 using Microsoft.SolverFoundation.Solvers;
+using DiagnosisProjects.LTMS;
 
 namespace DiagnosisProjects
 {
     class Program
     {
         static void Main(string[] args)
-        {
-           
+        {    
         }
+
+
+
 
         private static int Comparison(Gate gate, Gate gate1)
         {
