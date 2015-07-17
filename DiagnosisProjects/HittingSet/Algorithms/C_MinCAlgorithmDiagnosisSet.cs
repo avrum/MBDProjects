@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiagnosisProjects.HittingSet.Unittests.BB_MinC
+namespace DiagnosisProjects.HittingSet.Algorithms
 {
-    class BB_MinCUnittest_2cs
+    class C_MinCAlgorithmDiagnosisSet
     {
     }
 }

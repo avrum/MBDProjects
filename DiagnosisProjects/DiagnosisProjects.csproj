@@ -77,7 +77,7 @@
     <Compile Include="HittingSet\Unittests\A_MinC\A_MinCUnittest_1.cs" />
     <Compile Include="HittingSet\Unittests\A_MinC\A_MinCUnittest_2.cs" />
     <Compile Include="HittingSet\Unittests\BB_MinC\BB_MinCUnittest_1.cs" />
-    <Compile Include="HittingSet\Unittests\BB_MinC\BB_MinCUnittest_2cs.cs" />
+    <Compile Include="HittingSet\Unittests\BB_MinC\BB_MinCUnittest_2.cs" />
     <Compile Include="HittingSet\Unittests\C_MinC\C_MinCUnittest_1.cs" />
     <Compile Include="HittingSet\Unittests\C_MinC\C_MinCUnittest_2.cs" />
     <Compile Include="HittingSet\Unittests\E_MinC\E_MinCUnittest_1.cs" />

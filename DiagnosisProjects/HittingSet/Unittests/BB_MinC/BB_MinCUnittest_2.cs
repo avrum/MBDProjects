@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiagnosisProjects.HittingSet.Unittests.A_MinC
+namespace DiagnosisProjects.HittingSet.Unittests.BB_MinC
 {
-    class A_MinCUnittest_2
+    class BB_MinCUnittest_2
     {
         public static void RunTest()
         {
@@ -26,12 +26,12 @@ namespace DiagnosisProjects.HittingSet.Unittests.A_MinC
             ConflictSet cs = new ConflictSet();
             cs.Conflicts = new List<Conflict>() { c1, c2 };
 
-            MicC_Diagnosis minCDiagnosis = A_MinCAlgorithm.FindMinC(cs);
+            MicC_Diagnosis minCDiagnosis = BB_MinCAlgorithm.FindMinC(cs);
             foreach (Gate g in minCDiagnosis.TheDiagnosis)
             {
                 Console.WriteLine("Gate = " + g.Id);
             }
-            Console.WriteLine("A_MinC Unit test 1. minc = " + minCDiagnosis.cardinality);
+            Console.WriteLine("BB_MinC Unit test 1. minc = " + minCDiagnosis.cardinality);
 
             int x = 0;
         }
