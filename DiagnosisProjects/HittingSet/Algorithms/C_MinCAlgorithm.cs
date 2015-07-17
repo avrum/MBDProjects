@@ -32,6 +32,7 @@ namespace DiagnosisProjects.HittingSet.Algorithms
                 return;
             }
             // Dual Reduce
+            MinC_Utils.DualReduce(conflicts);
 
             // compute conflicts
             Gate s = MinC_Utils.getMostfrequentlyComp(conflicts);

@@ -25,6 +25,7 @@ namespace DiagnosisProjects.HittingSet.Algorithms
                 return infinityDiagnosis;
             }
             // Dual Reduce
+            MinC_Utils.DualReduce(conflicts);
 
             // compute conflicts
             Gate s = MinC_Utils.getMostfrequentlyComp(conflicts);
