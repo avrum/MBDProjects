@@ -27,15 +27,16 @@ namespace DiagnosisProjects.LTMS
         * */
         public List<List<Gate>> findConflicts()
         {
-
+            DateTime startTime = DateTime.Now;
             check_conflicts();
+            DateTime endTime = DateTime.Now;
+            
             List<List<Gate>> conf_gates = new List<List<Gate>>();
             foreach (Clouse c in this.conflicts){
                 List<Gate> conf=build_conf_list(c.supporting,new List<Gate>());
                 conf.Add(sm.Components.Find(g => g.Id==c.c_gate));
                 conf_gates.Add(conf);
             }
-           // return conf;
             return conf_gates;
         }
 
@@ -58,7 +59,7 @@ namespace DiagnosisProjects.LTMS
         /*
         * check_conflicts implement the ltms algorithm and build this .conflicts by check for conflicts in the cnf 
         * */
-        private void check_conflicts() //1-no conflict, 0-conflict
+        private void check_conflicts() 
         {
             int len;
             while (true)
@@ -66,26 +67,30 @@ namespace DiagnosisProjects.LTMS
                 List<Clouse> sat = new List<Clouse>();                
                 foreach (Clouse c in this.cnf.formula)
                 {
-                    if (c.literals.Any(x => ((x.val == 1 && x.not) || (x.val == 0 && !x.not))))
+                    if (c.literals.All(x => ((x.val == 1 && !x.not) || (x.val == 0 && x.not))))
+                    {
+                        if (!this.conflicts.Any(x => x.c_id == c.c_id))
+                        {
+                            this.conflicts.Add(c);  //c is conflict
+                        }
+                    }
+                    else if (c.literals.Any(x => ((x.val == 1 && x.not) || (x.val == 0 && !x.not))))
                     {
                         sat.Add(c); //c is satisfied
                     }
-                    else if (c.literals.All(x => ((x.val == 1 && !x.not) || (x.val == 0 && x.not))))
-                    {
-                        this.conflicts.Add(c);  //c is conflict
-                    }
+                    
                     else if (c.unknown == 1)//fringe
                     {
                         if (!this.fringe.Any(x=>x.unknown_literals.Any(y=>y.id==c.unknown_literals[0].id)))
                              this.fringe.Add(c);
                     }
-
                 }
                 this.cnf.formula.RemoveAll(c => sat.Any(y => y.c_id == c.c_id));
 
                 len = this.fringe.Count;
                 if (len > 0)
                 {
+                    ShuffleFringe();
                     foreach (Clouse c in this.fringe)
                     {
                         Atomic atom = c.unknown_literals[0];
@@ -116,8 +121,19 @@ namespace DiagnosisProjects.LTMS
         
     }
 
-
-
+        private void ShuffleFringe()
+        {
+            int n = this.fringe.Count;
+            Random rnd = new Random();
+            while (n > 1)
+            {
+                int k = (rnd.Next(0, n) % n);
+                n--;
+                Clouse value = this.fringe[k];
+                this.fringe[k] = this.fringe[n];
+                this.fringe[n] = value;
+            }
+        }
 
         /*
         * build_conf_list traverse over each c.supporting and build the gate list which representing the conflicts
@@ -132,6 +148,24 @@ namespace DiagnosisProjects.LTMS
                 else
                     cl.Add(sm.Components.Find(g => g.Id == c.c_gate));
                 
+            }
+            return cl;
+        }
+
+
+        /*
+      * build_conf_list traverse over each c.supporting and build the gate list which representing the conflicts
+      * */
+        private List<Clouse> build_conf_list_clouse(List<Clouse> c_list, List<Clouse> cl)
+        {
+            foreach (Clouse c in c_list)
+            {
+                if (c.supporting.Count > 0)
+                    build_conf_list_clouse(c.supporting, cl);
+
+                else
+                    cl.Add(c);
+
             }
             return cl;
         }

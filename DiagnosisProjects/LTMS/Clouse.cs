@@ -48,8 +48,7 @@ namespace DiagnosisProjects.LTMS
             build_unknown_list();
         }
 
-
-     
+      
         private void calc(Observation obs,char c)
         {
             int count = 1;

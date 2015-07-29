@@ -16,9 +16,10 @@ namespace DiagnosisProjects
     {
         static void Main(string[] args)
         {    
+               
         }
 
-
+   
 
 
         private static int Comparison(Gate gate, Gate gate1)
