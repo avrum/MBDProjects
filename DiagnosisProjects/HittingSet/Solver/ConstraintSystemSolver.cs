@@ -12,6 +12,7 @@ namespace DiagnosisProjects
     {
         private static ConstraintSystemSolver instance;
         public ConstraintSystem Solver { get; private set; }
+        public object Locker = ConstraintSystemSolverLocker.Locker;
         private static Dictionary<Wire, CspTerm> wireTermsDictionary;
 
         public static ConstraintSystemSolver Instance
@@ -42,14 +43,17 @@ namespace DiagnosisProjects
         /// <returns></returns>
         public bool CheckConsistensy(Observation observation, List<Gate> posibleConflict)
         {
-
-            // Set broken gates
-            foreach (Gate gate in posibleConflict)
+            lock (Locker)
             {
-                gate.IsNotHealthy = true;
-            }
+                //Debug.WriteLine("SAT CheckConsistensy IN!");
 
-            /*
+                // Set broken gates
+                foreach (Gate gate in posibleConflict)
+                {
+                    gate.IsNotHealthy = true;
+                }
+
+                /*
             // Add input constrain
             List<Wire> allInputWires = observation.TheModel.Input;
             foreach (Wire wire in allInputWires)
@@ -66,67 +70,94 @@ namespace DiagnosisProjects
             }
             */
 
-            // Add components constrain
-            List<Gate> allSystemGates = observation.TheModel.Components;
-            foreach (Gate gate in allSystemGates)
-            {
-                gate.AddConstaint();
+                // Add components constrain
+                List<Gate> allSystemGates = observation.TheModel.Components;
+                foreach (Gate gate in allSystemGates)
+                {
+                    gate.AddConstaint();
+                }
+
+
+                ConstraintSolverSolution solution;
+                try
+                {
+                    solution = Solver.Solve();
+                }
+                catch (Exception)
+                {
+                    Reset();
+                    solution = Solver.Solve();
+                }
+                
+
+
+                // If true its a diagnosis
+                // If false its a conflict
+                bool explainOutput = solution.HasFoundSolution;
+
+                if (!explainOutput)
+                {
+                    Debug.WriteLine("SAT Doesn't found a solution. The new node is N-O-T a diagnosis!");
+                }
+
+                //Reset
+                instance = null;
+                Solver.ResetSolver();
+                ConstraintSystemSolver newSolver = ConstraintSystemSolver.Instance;
+                wireTermsDictionary.Clear();
+
+                //Revert broken
+                foreach (Gate gate in posibleConflict)
+                {
+                    gate.IsNotHealthy = false;
+                }
+
+                //Debug.WriteLine("SAT CheckConsistensy OUT!");
+                return explainOutput;
+
             }
+        }
 
-            ConstraintSolverSolution solution = Solver.Solve();
-
-
-            // If true its a diagnosis
-            // If false its a conflict
-            bool explainOutput = solution.HasFoundSolution;
-
-            if (!explainOutput)
-            {
-                Debug.WriteLine("SAT Doesn't found a solution. The new node is N-O-T a diagnosis!");
-            }
-
-            //Reset
+        public static void Reset()
+        {
+            //Debug.WriteLine("SAT Reset IN!");
             instance = null;
             ConstraintSystemSolver newSolver = ConstraintSystemSolver.Instance;
             wireTermsDictionary.Clear();
-
-            //Revert broken
-            foreach (Gate gate in posibleConflict)
-            {
-                gate.IsNotHealthy = false;
-            }
-
-            return explainOutput;
+            //Debug.WriteLine("SAT Reset OUT!");
         }
 
         public CspTerm AddWireTerm(Wire wire)
         {
-
-            if (!wireTermsDictionary.ContainsKey(wire))
-            {
-                CspTerm term = Solver.CreateBoolean();
-
-                if (wire.Type == Wire.WireType.i)
+            //Debug.WriteLine("SAT IN!");
+      //      lock (Locker)
+      //      {
+                if (!wireTermsDictionary.ContainsKey(wire))
                 {
-                    if (wire.Value)
+                    CspTerm term = Solver.CreateBoolean();
+
+                    if (wire.Type == Wire.WireType.i)
                     {
-                        term = Solver.True;
+                        if (wire.Value)
+                        {
+                            term = Solver.True;
+                        }
+                        else
+                        {
+                            term = Solver.False;
+                        }
                     }
                     else
                     {
-                        term = Solver.False;
+                        term = Solver.CreateBoolean();
                     }
-                }
-                else
-                {
-                    term = Solver.CreateBoolean();
-                }
 
-                wire.term = term;
+                    wire.term = term;
 
-                wireTermsDictionary.Add(wire, term);
-            }
-
+                    wireTermsDictionary.Add(wire, term);
+                }      
+        //    }
+            //Debug.WriteLine("SAT OUT!");
             return wireTermsDictionary[wire];
         }
 

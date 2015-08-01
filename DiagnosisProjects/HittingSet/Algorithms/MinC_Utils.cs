@@ -114,6 +114,16 @@ namespace DiagnosisProjects.HittingSet.Algorithms
             return retValConflictSet;
         }
 
+        public static void DualReduce(ConflictSet conflicts)
+        {
+
+            //reduce V (conflicts)
+
+            //reduce U (components)
+
+            
+        }
+
         //returns the number of conflcits (i.e. compSets) that contains gate
         private static int numOfConflictsContainsComponent(List<CompSet> conflictsList, Gate gate)
         {
@@ -176,6 +186,8 @@ namespace DiagnosisProjects.HittingSet.Algorithms
                 }
             }
             return retValGates;
-        } 
+        }
+
+
     }
 }

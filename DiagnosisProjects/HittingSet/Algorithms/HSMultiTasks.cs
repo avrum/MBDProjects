@@ -72,6 +72,14 @@ namespace DiagnosisProjects.HittingSet
 
 
                 size = nodesToExpand.Count;
+
+
+                if (size - lastSize > 3000)
+                {
+                    Debug.WriteLine("Nodes to expand over 3000! ignore this obs");
+                    return diagnosisSet;
+                }
+
             }
 
             return diagnosisSet;

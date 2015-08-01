@@ -50,10 +50,17 @@
     <Compile Include="Cone.cs" />
     <Compile Include="Conflict.cs" />
     <Compile Include="ConflictSet.cs" />
+    <Compile Include="HittingSet\Algorithms\A_MinCAlgorithm.cs" />
+    <Compile Include="HittingSet\Algorithms\BB_MinCAlgorithm.cs" />
     <Compile Include="HittingSet\Algorithms\C_MinCAlgorithm.cs" />
+    <Compile Include="HittingSet\Algorithms\E_MinCAlgorithm.cs" />
     <Compile Include="HittingSet\Algorithms\IMinCAlgorithm.cs" />
+    <Compile Include="HittingSet\Algorithms\MicC_Diagnosis.cs" />
     <Compile Include="HittingSet\Algorithms\MinC_Utils.cs" />
     <Compile Include="HittingSet\Algorithms\R_MinCAlgorithm.cs" />
+    <Compile Include="HittingSet\HittingSetStatistics.cs" />
+    <Compile Include="HittingSet\HittingSetTester.cs" />
+    <Compile Include="HittingSet\Solver\ConstraintSystemSolverLocker.cs" />
     <Compile Include="HittingSet\Solver\ConstraintSystemSolver.cs" />
     <Compile Include="Diagnosis.cs" />
     <Compile Include="DiagnosisSet.cs" />
@@ -67,14 +74,24 @@
     <Compile Include="HittingSet\HittingSetFinder.cs" />
     <Compile Include="HittingSet\HSTreePath.cs" />
     <Compile Include="HittingSet\HSTreeNode.cs" />
-    <Compile Include="HittingSet\Unittests\C_MinCUnittest_1.cs" />
-    <Compile Include="HittingSet\Unittests\C_MinCUnittest_2.cs" />
+    <Compile Include="HittingSet\Unittests\A_MinC\A_MinCUnittest_1.cs" />
+    <Compile Include="HittingSet\Unittests\A_MinC\A_MinCUnittest_2.cs" />
+    <Compile Include="HittingSet\Unittests\BB_MinC\BB_MinCUnittest_1.cs" />
+    <Compile Include="HittingSet\Unittests\BB_MinC\BB_MinCUnittest_2.cs" />
+    <Compile Include="HittingSet\Unittests\C_MinC\C_MinCUnittest_1.cs" />
+    <Compile Include="HittingSet\Unittests\C_MinC\C_MinCUnittest_2.cs" />
+    <Compile Include="HittingSet\Unittests\E_MinC\E_MinCUnittest_1.cs" />
+    <Compile Include="HittingSet\Unittests\E_MinC\E_MinCUnittest_2.cs" />
     <Compile Include="HittingSet\Unittests\HSUnittest_3.cs" />
     <Compile Include="HittingSet\Unittests\HSUnittest_2.cs" />
     <Compile Include="HittingSet\Unittests\HSUnittest_1.cs" />
-    <Compile Include="HittingSet\Unittests\R_MinCUnittest_1.cs" />
-    <Compile Include="HittingSet\Unittests\R_MinCUnittest_2.cs" />
+    <Compile Include="HittingSet\Unittests\R_MinC\R_MinCUnittest_1.cs" />
+    <Compile Include="HittingSet\Unittests\R_MinC\R_MinCUnittest_2.cs" />
     <Compile Include="IDiagnoser.cs" />
+    <Compile Include="LTMS\Atomic.cs" />
+    <Compile Include="LTMS\Clouse.cs" />
+    <Compile Include="LTMS\Cnf.cs" />
+    <Compile Include="LTMS\LtmsAlgorithm.cs" />
     <Compile Include="ModelObservationCreator.cs" />
     <Compile Include="MultipleInputGate.cs" />
     <Compile Include="Observation.cs" />
@@ -101,6 +118,90 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="SystemFiles\74181.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\74181_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\74182.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\74182_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\74283.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\74283_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c1355.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c1355_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c17.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c17_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c1908.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c1908_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c2670.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c2670_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c3540.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c3540_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c432.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c432_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c499.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c499_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c5315.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c5315_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c6288.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c6288_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c7552.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c7552_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c880.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c880_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="HittingSet\Solver\Microsoft.Solver.Foundation.dll" />

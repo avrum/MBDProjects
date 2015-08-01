@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +28,13 @@ namespace DiagnosisProjects
             this.Id = id;
             this.type = type;
         }
+
+        public override List<Wire> getInput() {
+            List<Wire> i = new List<Wire>();
+            i.Add(input1);
+            return i;
+             }
+
         public override bool GetValue()
         {
             if (type == Type.buffer)
@@ -64,17 +72,22 @@ namespace DiagnosisProjects
                 */
             }
 
-            switch (consType)
+            lock (ConstraintSystemSolver.Instance.Locker)
             {
-                case Type.buffer:
-                    constraint = solver.Equal(inputTerm, outputTerm);
-                    break;
-                case Type.not:
-                    constraint = solver.Equal(inputTerm, solver.Not(outputTerm));
-                    break;
-            }
+                //Debug.WriteLine("SAT IN!");
+                switch (consType)
+                {
+                    case Type.buffer:
+                        constraint = solver.Equal(inputTerm, outputTerm);
+                        break;
+                    case Type.not:
+                        constraint = solver.Equal(inputTerm, solver.Not(outputTerm));
+                        break;
+                }
 
-            solver.AddConstraints(constraint);
+                solver.AddConstraints(constraint);
+                //Debug.WriteLine("SAT OUT!");
+            }
         }
     }
 }

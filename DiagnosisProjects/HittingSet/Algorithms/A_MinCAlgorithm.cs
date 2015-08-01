@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DiagnosisProjects.HittingSet.Algorithms
 {
-    static class R_MinCAlgorithm
+    class A_MinCAlgorithm
     {
         static int infinity = int.MaxValue;
 
@@ -24,25 +24,14 @@ namespace DiagnosisProjects.HittingSet.Algorithms
                 infinityDiagnosis.cardinality = infinity;
                 return infinityDiagnosis;
             }
-            // Dual Reduce
-            MinC_Utils.DualReduce(conflicts);
 
-            // compute conflicts
             Gate s = MinC_Utils.getMostfrequentlyComp(conflicts);
-            ConflictSet conflictsMinusS= MinC_Utils.ConflictsMinusComponent(conflicts, s);
             ConflictSet conflictsWithoutS = MinC_Utils.ConflictsWithoutComponent(conflicts, s);
 
-            MicC_Diagnosis mincDiagnosisNotContainS = FindMinC(conflictsMinusS);
             MicC_Diagnosis mincDiagnosisContaintS = FindMinC(conflictsWithoutS);
+            
             mincDiagnosisContaintS.AddCompToDiagnosis(s);
-            if (mincDiagnosisContaintS.cardinality <= mincDiagnosisNotContainS.cardinality)
-            {
-                return mincDiagnosisContaintS;
-            }
-            else
-            {
-                return mincDiagnosisNotContainS;
-            }
+            return mincDiagnosisContaintS;
 
         }
     }

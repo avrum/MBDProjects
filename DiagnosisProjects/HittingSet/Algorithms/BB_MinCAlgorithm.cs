@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DiagnosisProjects.HittingSet.Algorithms
 {
-    static class C_MinCAlgorithm 
+    class BB_MinCAlgorithm
     {
         static MicC_Diagnosis mincDiagnosis = new MicC_Diagnosis();
 
@@ -31,8 +31,6 @@ namespace DiagnosisProjects.HittingSet.Algorithms
                 mincDiagnosis = mDiagnosis;
                 return;
             }
-            // Dual Reduce
-            MinC_Utils.DualReduce(conflicts);
 
             // compute conflicts
             Gate s = MinC_Utils.getMostfrequentlyComp(conflicts);
