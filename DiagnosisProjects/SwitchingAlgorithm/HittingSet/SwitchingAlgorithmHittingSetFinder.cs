@@ -6,7 +6,8 @@ namespace DiagnosisProjects.SwitchingAlgorithm.HittingSet
 {
     class SwitchingAlgorithmHittingSetFinder
     {
-        private const int NumOfRetries = 100;
+        private const int NumOfRetries = 20;
+        private static readonly Random Rand = SwitchingAlgorithm.Rand;
 
         public static List<List<Gate>> FindHittingSet(List<List<Gate>> setsList, int requiredNumOfHittinSets, Dictionary<int, Gate> idToGate)
         {
@@ -15,35 +16,34 @@ namespace DiagnosisProjects.SwitchingAlgorithm.HittingSet
                 return new List<List<Gate>>();
             }
 
-            List<HashSet<int>> hittingSets = new List<HashSet<int>>();
-            int countNumberOfNoNewHitingSetFound = 0;
-            Random rand = new Random();
+            var hittingSets = new List<SortedSet<int>>();
+            var countNumberOfNoNewHitingSetFound = 0;
 
             while (hittingSets.Count < requiredNumOfHittinSets && countNumberOfNoNewHitingSetFound < NumOfRetries)
             {
-                int startIndexForIteration = rand.Next(0, setsList.Count); //random choose set for start iterate
+                var startIndexForIteration = Rand.Next(0, setsList.Count); //random choose set for start iterate
                 //add first item to hitting set(from the coshen set)
-                foreach (Gate item in setsList[startIndexForIteration])
+                for (var index = 0; index < setsList[startIndexForIteration].Count; index++)
                 {
+                    var item = setsList[startIndexForIteration][index];
                     if (countNumberOfNoNewHitingSetFound >= NumOfRetries)
                     {
                         break;
                     }
-                    HashSet<int> hittingSet = new HashSet<int>();
-                    hittingSet.Add(item.Id);
+                    var hittingSet = new SortedSet<int> {item.Id};
                     // add item from each set (if necessary)
-                    for (int j=0, i = (startIndexForIteration + 1) % setsList.Count; j < setsList.Count; i = (i + 1) % setsList.Count, j++)
+                    for (int j = 0, i = (startIndexForIteration + 1)%setsList.Count;
+                        j < setsList.Count;
+                        i = (i + 1)%setsList.Count, j++)
                     {
-                        HashSet<int> gatesIdsSet = GetGateIdsHashSet(setsList[i]);
-                        if (!hittingSet.Overlaps(gatesIdsSet))
-                        {
-                            int[] asArray = gatesIdsSet.ToArray();
-                            int newItem = asArray[rand.Next(asArray.Length)];
-                            hittingSet.Add(newItem);
-                        }
+                        var gatesIdsSet = GetGateIdsHashSet(setsList[i]);
+                        if (hittingSet.Overlaps(gatesIdsSet)) continue;
+                        var asArray = gatesIdsSet.ToArray();
+                        var newItem = asArray[Rand.Next(asArray.Length)];
+                        hittingSet.Add(newItem);
                     }
 
-                    bool isNewHittingSetFound = AddHittingSet(hittingSets, hittingSet);
+                    var isNewHittingSetFound = AddHittingSet(hittingSets, hittingSet);
                     if (!isNewHittingSetFound)
                     {
                         countNumberOfNoNewHitingSetFound ++;
@@ -53,31 +53,19 @@ namespace DiagnosisProjects.SwitchingAlgorithm.HittingSet
                         countNumberOfNoNewHitingSetFound = 0;
                     }
                 }
-
             }
             return GetGateListFromHashSet(hittingSets, idToGate);
         }
 
-        private static List<List<Gate>> GetGateListFromHashSet(List<HashSet<int>> hittingSets, Dictionary<int,Gate> idToGate)
+        private static List<List<Gate>> GetGateListFromHashSet(IEnumerable<SortedSet<int>> hittingSets, Dictionary<int,Gate> idToGate)
         {
-            List<List<Gate>> gateList = new List<List<Gate>>();
-            foreach (HashSet<int> hittingSet in hittingSets)
-            {
-                List<Gate> gates = new List<Gate>();
-                foreach (int id in hittingSet)
-                {
-                    Gate gate = idToGate[id];
-                    gates.Add(gate);
-                }
-                gateList.Add(gates);
-            }
-            return gateList;
+            return hittingSets.Select(hittingSet => hittingSet.Select(id => idToGate[id]).ToList()).ToList();
         }
 
-        private static HashSet<int> GetGateIdsHashSet(List<Gate> compSet)
+        private static HashSet<int> GetGateIdsHashSet(IEnumerable<Gate> compSet)
         {
-            HashSet<int> hashSet = new HashSet<int>();
-            foreach (Gate component in compSet)
+            var hashSet = new HashSet<int>();
+            foreach (var component in compSet)
             {
                 hashSet.Add(component.Id);
             }
@@ -86,10 +74,14 @@ namespace DiagnosisProjects.SwitchingAlgorithm.HittingSet
 
         //check if the new set is subset of another set or the opssite.
         // return true if new set added, false otherwise
-        private static bool AddHittingSet(List<HashSet<int>> hittingSets, HashSet<int> hittingSet)
+        private static bool AddHittingSet(ICollection<SortedSet<int>> hittingSets, SortedSet<int> hittingSet)
         {
-            List<HashSet<int>> superSetToRemove = new List<HashSet<int>>();
-            foreach (HashSet<int> current in hittingSets)
+            if (hittingSet.Count > SwitchingAlgorithm.MaxSetSize)
+            {
+                return false;
+            }
+            var superSetToRemove = new List<SortedSet<int>>();
+            foreach (var current in hittingSets)
             {
                 if (hittingSet.SetEquals(current) || hittingSet.IsSupersetOf(current)) //not need to add
                 {
@@ -103,7 +95,7 @@ namespace DiagnosisProjects.SwitchingAlgorithm.HittingSet
 
             if (superSetToRemove.Count != 0) //remove super sets
             {
-                foreach (HashSet<int> hashSet in superSetToRemove)
+                foreach (var hashSet in superSetToRemove)
                 {
                     hittingSets.Remove(hashSet);
                 }

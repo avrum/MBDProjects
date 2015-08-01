@@ -82,6 +82,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sets.cs" />
+    <Compile Include="SwitchingAlgorithm\CompSetTree\CompSetNode.cs" />
+    <Compile Include="SwitchingAlgorithm\CompSetTree\CompSetTree.cs" />
     <Compile Include="SwitchingAlgorithm\ConstraintSystemSolverMock.cs" />
     <Compile Include="SwitchingAlgorithm\HittingSet\SwitchingAlgorithmHittingSetFinder.cs" />
     <Compile Include="SwitchingAlgorithm\SetMinimizer\MinimizerComponent.cs" />
@@ -89,6 +91,7 @@
     <Compile Include="SwitchingAlgorithm\SubSetMinimal\SetsDataStructure.cs" />
     <Compile Include="SwitchingAlgorithm\SwitchingAlgorithm.cs" />
     <Compile Include="SwitchingAlgorithm\SwitchingDiagnosticEngine.cs" />
+    <Compile Include="SwitchingAlgorithm\UnitTesting\CompSetTreeTest.cs" />
     <Compile Include="SwitchingAlgorithm\UnitTesting\HittingSetFinderTest.cs" />
     <Compile Include="SwitchingAlgorithm\UnitTesting\SetMinimizerTest.cs" />
     <Compile Include="SwitchingAlgorithm\UnitTesting\SwitchingAlgorithmTest.cs" />

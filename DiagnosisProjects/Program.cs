@@ -18,18 +18,7 @@ namespace DiagnosisProjects
            
         }
 
-        private static int Comparison(Gate gate, Gate gate1)
-        {
-            if (gate.Id == gate1.Id)
-            {
-                return 0;
-            }
-            if (gate.Id > gate1.Id)
-            {
-                return 1;
-            }
-            return -1;
-        }
+
 
         private static string createKeyForSet(List<Gate> gates )
         {

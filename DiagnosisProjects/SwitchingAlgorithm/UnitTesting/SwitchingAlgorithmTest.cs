@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,7 +34,7 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
             SwitchingAlgorithm switchingAlgorithm = new SwitchingAlgorithm(_observations[TestingEnvironment.ObservationIndex], _initialConflictSet,
                 null, NUM_OF_DIAGNOSIS_REQUIRED);
             DiagnosisSet diagnosisSet = switchingAlgorithm.FindDiagnosis(-1);
-            printSetList(diagnosisSet);
+            PrintSetList(diagnosisSet, "diagnosis.txt");
             //printSetList(mockDiagnosisList);
             Assert.AreEqual(diagnosisSet.Count, mockDiagnosisList.Count);
         }
@@ -45,7 +46,7 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
 
             DiagnosisSet diagnosisSet = SwitchingDiagnosticEngine.findDiagnosisHaltByFirstDiagnosis(_observations[TestingEnvironment.ObservationIndex], _initialConflictSet, null);
             
-            printSetList(diagnosisSet);
+            PrintSetList(diagnosisSet, "diagnosis.txt");
             
             Assert.IsTrue(diagnosisSet.Count >= 1);
         }
@@ -58,7 +59,7 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
 
             DiagnosisSet diagnosisSet = SwitchingDiagnosticEngine.findDiagnosisHaltByQuantiy(_observations[TestingEnvironment.ObservationIndex], _initialConflictSet, null, quantity);
 
-            printSetList(diagnosisSet);
+            PrintSetList(diagnosisSet, "diagnosis.txt");
             //printSetList(mockDiagnosisList);
             Assert.IsTrue(mockDiagnosisList.Count<quantity || diagnosisSet.Count >= quantity);
         }
@@ -66,48 +67,77 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
         [TestMethod]
         public void TestfindFirtDiagnosisHaltByTime()
         {
-            int timeOut = 2 * 1000;
-            int epsilon = 1000;//error margin if timer is called in the begining of the while loop
+            const int timeOut = 5 * 60 * 1000;
+            const int epsilon = timeOut/5; //error margin if timer is called in the begining of the while loop
             
-            List<HashSet<int>> mockDiagnosisList = ConstraintSystemSolverMock.getInstance().GetDiagnosisSet();
-            Stopwatch sw = new Stopwatch();
+            var mockDiagnosisList = ConstraintSystemSolverMock.getInstance().GetDiagnosisSet();
+            var sw = new Stopwatch();
             sw.Start();
-            DiagnosisSet diagnosisSet = SwitchingDiagnosticEngine.findDiagnosisHaltByTime(_observations[TestingEnvironment.ObservationIndex], _initialConflictSet, null, timeOut);
+            var diagnosisSet = SwitchingDiagnosticEngine.findDiagnosisHaltByTime(_observations[TestingEnvironment.ObservationIndex], _initialConflictSet, null, timeOut);
             sw.Stop();
-            printSetList(diagnosisSet);
+            PrintSetList(diagnosisSet,"Diagnosis_"+TestingEnvironment.SystemFile);
             
-            bool algorithmFoundAll = diagnosisSet.Count == mockDiagnosisList.Count;
+            var algorithmFoundAll = diagnosisSet.Count == mockDiagnosisList.Count;
 
-            Assert.IsTrue(sw.ElapsedMilliseconds <= (timeOut + epsilon) && (algorithmFoundAll || sw.ElapsedMilliseconds>= (timeOut)));
+            Assert.IsTrue(sw.ElapsedMilliseconds <= (timeOut + epsilon) && (algorithmFoundAll || sw.ElapsedMilliseconds >= (timeOut)));
         }
 
       
-        private static void printSetList(DiagnosisSet diagnosisSet)
+        public static void PrintSetList(Sets sets, String fileName)
         {
+            var compSetList = new List<CompSet>(sets.getSets());
+            compSetList.Sort(Comparison);
+            var builder = new StringBuilder();
+            builder.Append("############ Set Total count:"+sets.getSets().Count+" ######################"+Environment.NewLine);
             Debug.WriteLine("############ Diagnosis-Set ######################");
-            foreach (Diagnosis diagnosis in diagnosisSet.Diagnoses)
+            
+            var setSize = 1;
+            while (compSetList.Count != 0)
             {
-                Debug.Write("{ ");
-                foreach (Gate gate in diagnosis.TheDiagnosis)
+                var alreayPrinted = new List<CompSet>();
+                var size = setSize;
+                foreach (var set in compSetList.Where(set => set.getComponents().Count == size))
                 {
-                    Debug.Write(gate.Id + " ");
+                    alreayPrinted.Add(set);
+                    builder.Append("{ ");
+                    Debug.Write("{ ");
+                    foreach (var gate in set.getComponents())
+                    {
+                        builder.Append(gate.Id + " ");
+                        Debug.Write(gate.Id + " ");
+                    }
+                    builder.Append("}" + Environment.NewLine);
+                    Debug.WriteLine("}");
                 }
-                Debug.WriteLine("}");
+                compSetList.RemoveAll(alreayPrinted.Contains);
+                setSize++;
             }
+            File.WriteAllText(@"C:\Users\niv_av\Documents\University\Year 4\סמסטר ח\איתור תקלות\פרויקט\FILES\Diagnosis\"+fileName, builder.ToString());
         }
 
-        private static void printSetList(List<HashSet<int>> diagnosisList)
+        private static int Comparison(CompSet set1, CompSet set2)
         {
-            Debug.WriteLine("############ Diagnosis-Set(from mock) ######################");
-            foreach (HashSet<int> diagnosis in diagnosisList)
+            var list1 = set1.getComponents();
+            var list2 = set2.getComponents();
+            var length = list1.Count < list2.Count ? list1.Count : list2.Count;
+            for (var i = 0; i < length; i++)
             {
-                Debug.Write("{ ");
-                foreach (int gate in diagnosis)
+                if (list1[i].Id > list2[i].Id)
                 {
-                    Debug.Write(gate + " ");
+                    return 1;
                 }
-                Debug.WriteLine("}");
+                if (list1[i].Id < list2[i].Id)
+                {
+                    return -1;
+                }
             }
+
+            if (list1.Count == list2.Count)
+            {
+                return 0;
+            }
+
+            return list1.Count < list2.Count ? 1 : -1;
         }
 
     }

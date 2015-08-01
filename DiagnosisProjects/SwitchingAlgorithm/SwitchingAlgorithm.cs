@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Timers;
 using DiagnosisProjects.SwitchingAlgorithm.HittingSet;
 using DiagnosisProjects.SwitchingAlgorithm.SubSetMinimal;
+using DiagnosisProjects.SwitchingAlgorithm.UnitTesting;
 using Microsoft.SolverFoundation.Services;
 
 namespace DiagnosisProjects.SwitchingAlgorithm
@@ -13,11 +17,14 @@ namespace DiagnosisProjects.SwitchingAlgorithm
         private readonly int _requiredNumOfDiagnosis;
 
         private readonly SetsDataStructure _diagnosisesSetDataStructure;
+        //private readonly CompSetTree.CompSetTree _diagnosisesSetDataStructure;
         private readonly SetsDataStructure _conflictsSetDataStructure;
+        //private readonly CompSetTree.CompSetTree _conflictsSetDataStructure;
 
         public static Dictionary<int, Gate> IdToGates = new Dictionary<int, Gate>();
 
         public static ConstraintSystemSolverMock Solver = ConstraintSystemSolverMock.getInstance();
+        private const int RequiredNumOfHittinSets = 10000;
         //public static ConstraintSystemSolver Solver = ConstraintSystemSolver.Instance;
 
         public SwitchingAlgorithm(Observation observation, ConflictSet initialConflictsSet, DiagnosisSet initialDiagnosisSet, int requiredNumOfDiagnosis)
@@ -26,6 +33,7 @@ namespace DiagnosisProjects.SwitchingAlgorithm
             this._observation = observation;
             this._requiredNumOfDiagnosis = requiredNumOfDiagnosis;
             this._conflictsSetDataStructure = new SetsDataStructure("Conflicts");
+            //this._conflictsSetDataStructure = new CompSetTree.CompSetTree();
             if (initialConflictsSet != null)
             {
                 foreach (Conflict conflict in initialConflictsSet.Conflicts)
@@ -34,6 +42,7 @@ namespace DiagnosisProjects.SwitchingAlgorithm
                 }
             }
             this._diagnosisesSetDataStructure = new SetsDataStructure("Diagnosises");
+            //this._diagnosisesSetDataStructure = new CompSetTree.CompSetTree();
             if (initialDiagnosisSet != null)
             {
                 foreach (Diagnosis diagnosis in initialDiagnosisSet.Diagnoses)
@@ -43,11 +52,11 @@ namespace DiagnosisProjects.SwitchingAlgorithm
             }
             if (IdToGates.Count == 0)
             {
-                buildIdToGateDictionary(observation.TheModel.Components);
+                BuildIdToGateDictionary(observation.TheModel.Components);
             }
         }
 
-        private void buildIdToGateDictionary(List<Gate> components)
+        protected void BuildIdToGateDictionary(IEnumerable<Gate> components)
         {
             foreach (Gate component in components)
             {
@@ -55,127 +64,175 @@ namespace DiagnosisProjects.SwitchingAlgorithm
             }
         }
 
-        
-        
-        
+
+        private static bool _isTimeOut = false;
+        public static int MaxSetSize = 100;
+        public static Random Rand = new Random();
+
         //The Main Algorithm
         public DiagnosisSet FindDiagnosis(int timeOut)
         {
-            bool isTimeOut = false;
-
-            startTimer(timeOut, obj =>
-                {
-                    isTimeOut = true;
-                });
+            if (timeOut > 0)
+            {
+                var aTimer = new Timer();
+                aTimer.Elapsed += OnTimedEvent;
+                aTimer.Interval = timeOut;
+                aTimer.Enabled = true;
+            }
+            var diagnosisCount = _diagnosisesSetDataStructure.GetCompSets().Count;
+            var conflictsCount = _conflictsSetDataStructure.GetCompSets().Count;
+            var isNewSetsFound = true;
             
-            int diagnosisCount = _diagnosisesSetDataStructure.GetCompSets().Count;
-            int conflictsCount = _conflictsSetDataStructure.GetCompSets().Count;
-            bool isNewSetsFound = true;
-            
-            //Probably we will have few 'findDiagnosis' function with different 'while' condition (i.e - findDiagnosisByTime, findDiagnosisByCount,...)
-            while (!isTimeOut && isNewSetsFound && (diagnosisCount < _requiredNumOfDiagnosis))
+            while (!_isTimeOut && isNewSetsFound && (diagnosisCount < _requiredNumOfDiagnosis))
             {
                 FindDiagnosisFromConflicts();
                 FindConflictsFromDiagnosis();
 
-                int newDiagnosisCount = _diagnosisesSetDataStructure.GetCompSets().Count;
-                int newConflictsCount = _conflictsSetDataStructure.GetCompSets().Count;
+                var newDiagnosisCount = _diagnosisesSetDataStructure.GetCompSets().Count;
+                var newConflictsCount = _conflictsSetDataStructure.GetCompSets().Count;
                 isNewSetsFound = (newConflictsCount != conflictsCount) || (newDiagnosisCount != diagnosisCount);
                 diagnosisCount = newDiagnosisCount;
                 conflictsCount = newConflictsCount;
             }
-            return buildDiagnosisSet();
+            SwitchingAlgorithmTest.PrintSetList(BuildConflictSet(), "Conflicts_"+TestingEnvironment.SystemFile);
+            return BuildDiagnosisSet();
         }
 
-        private void startTimer(int timeOut, System.Threading.TimerCallback callback)
+        private static void OnTimedEvent(object source, ElapsedEventArgs e)
         {
-            if (timeOut > 0)
-            {
-                System.Threading.Timer TimerItem = new System.Threading.Timer(
-                callback
-                , null
-                , TimeSpan.FromMilliseconds(timeOut)
-                , TimeSpan.FromMilliseconds(-1));
-            }
+            ((Timer) source).Enabled = false;
+            _isTimeOut = true;
+            Debug.WriteLine("Time elapsed");
         }
 
-        private DiagnosisSet buildDiagnosisSet()
+        private DiagnosisSet BuildDiagnosisSet()
         {
-            DiagnosisSet diagnosisSet = new DiagnosisSet();
-            foreach (List<Gate> gates in _diagnosisesSetDataStructure.GetCompSets())
+            var diagnosisSet = new DiagnosisSet();
+            for (var index = 0; index < _diagnosisesSetDataStructure.GetCompSets().Count; index++)
             {
-                Diagnosis diagnosis = new Diagnosis(gates);
+                var gates = _diagnosisesSetDataStructure.GetCompSets()[index];
+                var diagnosis = new Diagnosis(gates);
                 diagnosisSet.AddDiagnosis(diagnosis);
             }
             return diagnosisSet;
         }
 
+        private ConflictSet BuildConflictSet()
+        {
+            var conflictSet = new ConflictSet {Conflicts = new List<Conflict>()};
+            for (var index = 0; index < _conflictsSetDataStructure.GetCompSets().Count; index++)
+            {
+                var gates = _conflictsSetDataStructure.GetCompSets()[index];
+                var conflict = new Conflict(gates);
+                conflictSet.Conflicts.Add(conflict);
+            }
+            return conflictSet;
+        }
+
+        private readonly List<List<Gate>> _hittingSetsFromConflicts = new List<List<Gate>>();
         private void FindDiagnosisFromConflicts()
         {
-            List<List<Gate>> hittingSets = SwitchingAlgorithmHittingSetFinder.FindHittingSet(_conflictsSetDataStructure.GetCompSets(), 1000, IdToGates);
-            foreach (List<Gate> hittingSet in hittingSets)
+            var hittingSets = SwitchingAlgorithmHittingSetFinder.FindHittingSet(_conflictsSetDataStructure.GetCompSets(), RequiredNumOfHittinSets, IdToGates);
+            var filteredHittingSet = FilterNewHittingSsets(_hittingSetsFromConflicts, hittingSets);
+            _hittingSetsFromConflicts.AddRange(filteredHittingSet);
+            int a = 0, b = 0;
+            foreach (var hittingSet in filteredHittingSet)
             {
-                bool isConsistent = Solver.CheckConsistensy(_observation, hittingSet);
+                var isConsistent = Solver.CheckConsistensy(_observation, hittingSet);
                 if (isConsistent) //it is a diagnosis
                 {
+                    a++;
                     AddComponentToSet(_diagnosisesSetDataStructure, hittingSet, true); 
                 }
                 else //it is a conflict
                 {
+                    b++;
                     AddComponentToSet(_conflictsSetDataStructure, (GetOppositeComponenetsList(_observation.TheModel.Components, hittingSet)), false); 
                 }
             }
         }
 
+        private readonly List<List<Gate>> _hittingSetsFromDiagnosis = new List<List<Gate>>();
         private void FindConflictsFromDiagnosis()
         {
-            List<List<Gate>> hittingSets = SwitchingAlgorithmHittingSetFinder.FindHittingSet(_diagnosisesSetDataStructure.GetCompSets(), 1000, IdToGates); // null = _diagnosisSet
-            foreach (List<Gate> hittingSet in hittingSets)
+            var hittingSets = SwitchingAlgorithmHittingSetFinder.FindHittingSet(_diagnosisesSetDataStructure.GetCompSets(), RequiredNumOfHittinSets, IdToGates); // null = _diagnosisSet
+            var filteredHittingSet = FilterNewHittingSsets(_hittingSetsFromDiagnosis, hittingSets);
+            _hittingSetsFromDiagnosis.AddRange(filteredHittingSet);
+            int a = 0, b = 0;
+            foreach (var hittingSet in filteredHittingSet)
             {
-                List<Gate> oppositeSet = GetOppositeComponenetsList(_observation.TheModel.Components, hittingSet);
-                //bool isConsistent = Solver.CheckConsistensy(Observation, hittingSet);
-                bool isConsistent = Solver.CheckConsistensy(_observation, oppositeSet);
+                var oppositeSet = GetOppositeComponenetsList(_observation.TheModel.Components, hittingSet);
+                var isConsistent = Solver.CheckConsistensy(_observation, oppositeSet);
                 if (!isConsistent) //it is a conflict
                 {
+                    a++;
                     AddComponentToSet(_conflictsSetDataStructure, hittingSet, false); 
                 }
                 else //it is a diagnosis
                 {
+                    b++;
                     AddComponentToSet(_diagnosisesSetDataStructure, oppositeSet, true);
                 }
             }
         }
 
+        private static List<List<Gate>> FilterNewHittingSsets(IEnumerable<List<Gate>> sets, IEnumerable<List<Gate>> hittingSets)
+        {
+            return hittingSets.Where(hittingSet => !IsContainList(sets, hittingSet)).ToList();
+        }
+
+        private static bool IsContainList(IEnumerable<List<Gate>> allLists, IEnumerable<Gate> list)
+        {
+            return allLists.Select(aList => aList.SequenceEqual(list)).Any(areEqual => areEqual);
+        }
+
         public static List<Gate> GetOppositeComponenetsList(List<Gate> allSystemComponents, List<Gate> compSetComponents)
         {
-            List<Gate> oppositeComponenetsList = new List<Gate>();
-            foreach (Gate systemComponent in allSystemComponents)
-            {
-                if (!compSetComponents.Contains(systemComponent))
-                {
-                    oppositeComponenetsList.Add(systemComponent);
-                }
-            }
+            var oppositeComponenetsList = allSystemComponents.Where(systemComponent => !compSetComponents.Contains(systemComponent)).ToList();
+            oppositeComponenetsList.Sort(Comparison);
             return oppositeComponenetsList;
         }
 
-        private void AddComponentToSet(SetsDataStructure sets , List<Gate> gates , bool needToBeSatisfied)
+        private void AddComponentToSet(SetsDataStructure sets, List<Gate> gates, bool needToBeSatisfied)
         {
-            List<Gate> minimizedSet = MinimizeCompSet(gates, needToBeSatisfied);
+            var minimizedSet = MinimizeCompSet(gates, needToBeSatisfied);
             //add to data structure while saving minimal subset
-            sets.AddSet(minimizedSet);
+            if (minimizedSet.Count < MaxSetSize)
+            {
+                sets.AddSet(minimizedSet);
+            }
         }
 
         private List<Gate> MinimizeCompSet(List<Gate> gates, bool needToBeSatisfied)
         {
-            List<Gate> minimizedGatesList = SetMinimizer.SetMinimizer.Minimize(_observation, gates, needToBeSatisfied, 20);
+            var minimizedGatesList = SetMinimizer.SetMinimizer.Minimize(_observation, gates, needToBeSatisfied, 100);
             return minimizedGatesList;
+        }
+
+        private static int Comparison(Gate gate, Gate gate1)
+        {
+            if (gate.Id == gate1.Id)
+            {
+                return 0;
+            }
+            if (gate.Id > gate1.Id)
+            {
+                return 1;
+            }
+            return -1;
         }
 
     }
 
+
+
     public static class TestingEnvironment
     {
+        //public static String SystemFile = "74181.txt";
+        //public static String ObservationFile = "74181_iscas85.txt";
+        //public static String DiagnosisFile = "74181_1_Diag.txt";
+        //public static int ObservationIndex = 0;
+
         public static String SystemFile = "777.txt";
         public static String ObservationFile = "777_iscas85.txt";
         public static String DiagnosisFile = "777_1_Diag.txt";

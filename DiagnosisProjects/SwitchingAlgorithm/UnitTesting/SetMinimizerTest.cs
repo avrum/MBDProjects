@@ -26,11 +26,11 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
         [TestMethod]
         public void TestMinimize()
         {
-            Observation observation = _observations[0];
-            List<Gate> allGates = observation.TheModel.Components;
-            List<Gate> diadnosis = new List<Gate>() { allGates[1], allGates[6], allGates[2], allGates[3] };
+            var observation = _observations[0];
+            var allGates = observation.TheModel.Components;
+            var diadnosis = new List<Gate>() { allGates[1], allGates[6], allGates[2], allGates[3] };
             
-            List<Gate> minimizeList = SetMinimizer.SetMinimizer.Minimize(observation, diadnosis, true, 10);
+            var minimizeList = SetMinimizer.SetMinimizer.Minimize(observation, diadnosis, true, 10);
             Assert.AreEqual(minimizeList.Count, 2);
         }
     }
