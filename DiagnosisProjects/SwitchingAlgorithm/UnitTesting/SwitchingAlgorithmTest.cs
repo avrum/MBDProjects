@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
@@ -15,7 +14,7 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
 
         private List<Observation> _observations;
         private ConflictSet _initialConflictSet;
-        private int NUM_OF_DIAGNOSIS_REQUIRED = 10000;
+        private const int NumOfDiagnosisRequired = 10000;
 
         [TestInitialize()]
         public void Initialize() 
@@ -32,7 +31,7 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
         {
             List<HashSet<int>> mockDiagnosisList = ConstraintSystemSolverMock.getInstance().GetDiagnosisSet();
             SwitchingAlgorithm switchingAlgorithm = new SwitchingAlgorithm(_observations[TestingEnvironment.ObservationIndex], _initialConflictSet,
-                null, NUM_OF_DIAGNOSIS_REQUIRED);
+                null, NumOfDiagnosisRequired);
             DiagnosisSet diagnosisSet = switchingAlgorithm.FindDiagnosis(-1);
             PrintSetList(diagnosisSet, "diagnosis.txt");
             //printSetList(mockDiagnosisList);
@@ -44,9 +43,9 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
         {
             List<HashSet<int>> mockDiagnosisList = ConstraintSystemSolverMock.getInstance().GetDiagnosisSet();
 
-            DiagnosisSet diagnosisSet = SwitchingDiagnosticEngine.findDiagnosisHaltByFirstDiagnosis(_observations[TestingEnvironment.ObservationIndex], _initialConflictSet, null);
-            
-            PrintSetList(diagnosisSet, "diagnosis.txt");
+            DiagnosisSet diagnosisSet = SwitchingDiagnosticEngine.FindDiagnosisHaltByFirstDiagnosis(_observations[TestingEnvironment.ObservationIndex], _initialConflictSet, null);
+
+            PrintSetList(diagnosisSet, "Diagnosis_" + TestingEnvironment.SystemFile);
             
             Assert.IsTrue(diagnosisSet.Count >= 1);
         }
@@ -54,13 +53,12 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
         [TestMethod]
         public void TestfindFirtDiagnosisHaltByQuantiy()
         {
-            int quantity = 4;
-            List<HashSet<int>> mockDiagnosisList = ConstraintSystemSolverMock.getInstance().GetDiagnosisSet();
+            const int quantity = 4;
+            var mockDiagnosisList = ConstraintSystemSolverMock.getInstance().GetDiagnosisSet();
 
-            DiagnosisSet diagnosisSet = SwitchingDiagnosticEngine.findDiagnosisHaltByQuantiy(_observations[TestingEnvironment.ObservationIndex], _initialConflictSet, null, quantity);
+            var diagnosisSet = SwitchingDiagnosticEngine.FindDiagnosisHaltByQuantiy(_observations[TestingEnvironment.ObservationIndex], _initialConflictSet, null, quantity);
 
-            PrintSetList(diagnosisSet, "diagnosis.txt");
-            //printSetList(mockDiagnosisList);
+            PrintSetList(diagnosisSet, "Diagnosis_" + TestingEnvironment.SystemFile);
             Assert.IsTrue(mockDiagnosisList.Count<quantity || diagnosisSet.Count >= quantity);
         }
 
@@ -73,7 +71,7 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
             var mockDiagnosisList = ConstraintSystemSolverMock.getInstance().GetDiagnosisSet();
             var sw = new Stopwatch();
             sw.Start();
-            var diagnosisSet = SwitchingDiagnosticEngine.findDiagnosisHaltByTime(_observations[TestingEnvironment.ObservationIndex], _initialConflictSet, null, timeOut);
+            var diagnosisSet = SwitchingDiagnosticEngine.FindDiagnosisHaltByTime(_observations[TestingEnvironment.ObservationIndex], _initialConflictSet, null, timeOut);
             sw.Stop();
             PrintSetList(diagnosisSet,"Diagnosis_"+TestingEnvironment.SystemFile);
             

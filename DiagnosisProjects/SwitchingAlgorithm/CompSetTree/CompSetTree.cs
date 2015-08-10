@@ -6,7 +6,7 @@ namespace DiagnosisProjects.SwitchingAlgorithm.CompSetTree
 {
     public class CompSetTree
     {
-        private Dictionary<int, List<CompSetNode>> _idToCompSetNodes;
+        private readonly Dictionary<int, List<CompSetNode>> _idToCompSetNodes;
 
         private readonly CompSetNode _root;
       
@@ -28,18 +28,15 @@ namespace DiagnosisProjects.SwitchingAlgorithm.CompSetTree
         }
 
 
-        //TODO - there are Needless check because we are not deleteing elements when removin them from tree(not possible)
-        private void RemoveSuperSets(List<Gate> gates)
+        private void RemoveSuperSets(IReadOnlyList<Gate> gates)
         {
-            if (_idToCompSetNodes.ContainsKey(gates[0].Id))
+            if (!_idToCompSetNodes.ContainsKey(gates[0].Id)) return;
+            var nodes = _idToCompSetNodes[gates[0].Id];
+            var tempGatesList = new List<Gate>(gates);
+            tempGatesList.RemoveAt(0); //check from second element
+            foreach (var compSetNode in nodes)
             {
-                var nodes = _idToCompSetNodes[gates[0].Id];
-                var tempGatesList = new List<Gate>(gates);
-                tempGatesList.RemoveAt(0); //check from second element
-                foreach (var compSetNode in nodes)
-                {
-                    compSetNode.RemoveSuperSetsIfExist(tempGatesList.Select(gate => gate.Id).ToList());
-                }
+                compSetNode.RemoveSuperSetsIfExist(tempGatesList.Select(gate => gate.Id).ToList());
             }
         }
 
@@ -72,18 +69,7 @@ namespace DiagnosisProjects.SwitchingAlgorithm.CompSetTree
 
         public List<List<Gate>> GetCompSets()
         {
-            List<List<Gate>> result = new List<List<Gate>>();
-            foreach (var compSet in GetAllCompsSets())
-            {
-                List<Gate> gates = new List<Gate>();
-                foreach (var i in compSet)
-                {
-                    Gate gate = SwitchingAlgorithm.IdToGates[i];
-                    gates.Add(gate);
-                }
-                result.Add(gates);
-            }
-            return result;
+            return GetAllCompsSets().Select(compSet => compSet.Select(i => SwitchingAlgorithm.IdToGates[i]).ToList()).ToList();
         }
 
         public void AddChildToAllCompSetDictionary(CompSetNode newChild)

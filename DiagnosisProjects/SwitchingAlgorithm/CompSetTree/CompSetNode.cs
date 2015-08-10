@@ -39,10 +39,10 @@ namespace DiagnosisProjects.SwitchingAlgorithm.CompSetTree
 
         private void AddChild(List<int> compSet )
         {
-            int curentId = compSet[0];
+            var curentId = compSet[0];
             if (Childs.ContainsKey(curentId))
             {
-                CompSetNode child = Childs[curentId];
+                var child = Childs[curentId];
                 compSet.RemoveAt(0);
                 if ((compSet.Count == 0) && (child.Childs.Count >= 0)) //it is sub set or equal - remove super sets (childs)
                 {

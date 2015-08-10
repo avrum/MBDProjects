@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Timers;
 using DiagnosisProjects.SwitchingAlgorithm.HittingSet;
 using DiagnosisProjects.SwitchingAlgorithm.SubSetMinimal;
 using DiagnosisProjects.SwitchingAlgorithm.UnitTesting;
 using Microsoft.SolverFoundation.Services;
+using Timer = System.Timers.Timer;
 
 namespace DiagnosisProjects.SwitchingAlgorithm
 {
@@ -26,17 +29,16 @@ namespace DiagnosisProjects.SwitchingAlgorithm
         public static ConstraintSystemSolverMock Solver = ConstraintSystemSolverMock.getInstance();
         private const int RequiredNumOfHittinSets = 10000;
         //public static ConstraintSystemSolver Solver = ConstraintSystemSolver.Instance;
-
+        private readonly Object _lock = new Object();
         public SwitchingAlgorithm(Observation observation, ConflictSet initialConflictsSet, DiagnosisSet initialDiagnosisSet, int requiredNumOfDiagnosis)
         {
-            ConflictSet conflictSet;
             this._observation = observation;
             this._requiredNumOfDiagnosis = requiredNumOfDiagnosis;
             this._conflictsSetDataStructure = new SetsDataStructure("Conflicts");
             //this._conflictsSetDataStructure = new CompSetTree.CompSetTree();
             if (initialConflictsSet != null)
             {
-                foreach (Conflict conflict in initialConflictsSet.Conflicts)
+                foreach (var conflict in initialConflictsSet.Conflicts)
                 {
                     _conflictsSetDataStructure.AddSet(conflict.TheConflict);
                 }
@@ -45,7 +47,7 @@ namespace DiagnosisProjects.SwitchingAlgorithm
             //this._diagnosisesSetDataStructure = new CompSetTree.CompSetTree();
             if (initialDiagnosisSet != null)
             {
-                foreach (Diagnosis diagnosis in initialDiagnosisSet.Diagnoses)
+                foreach (var diagnosis in initialDiagnosisSet.Diagnoses)
                 {
                     _diagnosisesSetDataStructure.AddSet(diagnosis.TheDiagnosis);
                 }
@@ -67,6 +69,7 @@ namespace DiagnosisProjects.SwitchingAlgorithm
 
         private static bool _isTimeOut = false;
         public static int MaxSetSize = 100;
+        private const int NumOfThreads = 50;
         public static Random Rand = new Random();
 
         //The Main Algorithm
@@ -82,9 +85,10 @@ namespace DiagnosisProjects.SwitchingAlgorithm
             var diagnosisCount = _diagnosisesSetDataStructure.GetCompSets().Count;
             var conflictsCount = _conflictsSetDataStructure.GetCompSets().Count;
             var isNewSetsFound = true;
-            
+            var steps = 0;
             while (!_isTimeOut && isNewSetsFound && (diagnosisCount < _requiredNumOfDiagnosis))
             {
+                steps++;
                 FindDiagnosisFromConflicts();
                 FindConflictsFromDiagnosis();
 
@@ -129,25 +133,54 @@ namespace DiagnosisProjects.SwitchingAlgorithm
             return conflictSet;
         }
 
+        
         private readonly List<List<Gate>> _hittingSetsFromConflicts = new List<List<Gate>>();
         private void FindDiagnosisFromConflicts()
         {
             var hittingSets = SwitchingAlgorithmHittingSetFinder.FindHittingSet(_conflictsSetDataStructure.GetCompSets(), RequiredNumOfHittinSets, IdToGates);
             var filteredHittingSet = FilterNewHittingSsets(_hittingSetsFromConflicts, hittingSets);
             _hittingSetsFromConflicts.AddRange(filteredHittingSet);
-            int a = 0, b = 0;
-            foreach (var hittingSet in filteredHittingSet)
+            var numOfFilteredHittingSets = filteredHittingSet.Count;
+            var taskCount = numOfFilteredHittingSets % NumOfThreads == 0 ? numOfFilteredHittingSets / NumOfThreads : (numOfFilteredHittingSets / NumOfThreads) + 1;
+            var tasks = new Task[taskCount];
+            var startIndex = 0;
+            var endIndex = numOfFilteredHittingSets < NumOfThreads ? numOfFilteredHittingSets : NumOfThreads;
+            for (var index = 0; index < taskCount; index++)
             {
+                var localStartIndex = startIndex;
+                var localEndIndex = endIndex;
+                tasks[index] = Task.Factory.StartNew(() => AddComponentFromConflicts(filteredHittingSet, localStartIndex, localEndIndex));
+                if (endIndex == numOfFilteredHittingSets)
+                {
+                    break;
+                }
+                startIndex = endIndex;
+                if (endIndex + NumOfThreads > numOfFilteredHittingSets)
+                {
+                    endIndex = numOfFilteredHittingSets;
+                }
+                else
+                {
+                    endIndex = endIndex + NumOfThreads;
+                }
+            }
+            Task.WaitAll(tasks);
+        }
+
+        public void AddComponentFromConflicts(List<List<Gate>> filteredHittingSet, int startIndex, int endIndex)
+        {
+            for (var index = startIndex; index < endIndex; index++)
+            {
+                var hittingSet = filteredHittingSet[index];
                 var isConsistent = Solver.CheckConsistensy(_observation, hittingSet);
                 if (isConsistent) //it is a diagnosis
                 {
-                    a++;
-                    AddComponentToSet(_diagnosisesSetDataStructure, hittingSet, true); 
+                    AddComponentToSet(_diagnosisesSetDataStructure, hittingSet, true);
                 }
                 else //it is a conflict
                 {
-                    b++;
-                    AddComponentToSet(_conflictsSetDataStructure, (GetOppositeComponenetsList(_observation.TheModel.Components, hittingSet)), false); 
+                    AddComponentToSet(_conflictsSetDataStructure,
+                        (GetOppositeComponenetsList(_observation.TheModel.Components, hittingSet)), false);
                 }
             }
         }
@@ -158,21 +191,56 @@ namespace DiagnosisProjects.SwitchingAlgorithm
             var hittingSets = SwitchingAlgorithmHittingSetFinder.FindHittingSet(_diagnosisesSetDataStructure.GetCompSets(), RequiredNumOfHittinSets, IdToGates); // null = _diagnosisSet
             var filteredHittingSet = FilterNewHittingSsets(_hittingSetsFromDiagnosis, hittingSets);
             _hittingSetsFromDiagnosis.AddRange(filteredHittingSet);
-            int a = 0, b = 0;
-            foreach (var hittingSet in filteredHittingSet)
+            if (filteredHittingSet == null) return;
+            var numOfFilteredHittingSets = filteredHittingSet.Count;
+            var taskCount = numOfFilteredHittingSets % NumOfThreads == 0 ? numOfFilteredHittingSets / NumOfThreads : (numOfFilteredHittingSets / NumOfThreads) + 1;
+            var tasks = new Task[taskCount];
+            var startIndex = 0;
+            var endIndex = numOfFilteredHittingSets < NumOfThreads ? numOfFilteredHittingSets : NumOfThreads;
+            for (var index = 0; index < taskCount; index++)
             {
-                var oppositeSet = GetOppositeComponenetsList(_observation.TheModel.Components, hittingSet);
-                var isConsistent = Solver.CheckConsistensy(_observation, oppositeSet);
-                if (!isConsistent) //it is a conflict
+                var localStartIndex = startIndex;
+                var localEndIndex = endIndex;
+                tasks[index] = Task.Factory.StartNew(() => AddComponentFromDiagnosis(filteredHittingSet, localStartIndex, localEndIndex));
+                if (endIndex == numOfFilteredHittingSets)
                 {
-                    a++;
-                    AddComponentToSet(_conflictsSetDataStructure, hittingSet, false); 
+                    break;
                 }
-                else //it is a diagnosis
+                startIndex = endIndex;
+                if (endIndex + NumOfThreads > numOfFilteredHittingSets)
                 {
-                    b++;
-                    AddComponentToSet(_diagnosisesSetDataStructure, oppositeSet, true);
+                    endIndex = numOfFilteredHittingSets;
                 }
+                else
+                {
+                    endIndex = endIndex + NumOfThreads;
+                }
+            }
+            Task.WaitAll(tasks);
+        }
+
+        public void AddComponentFromDiagnosis(List<List<Gate>> filteredHittingSet, int startIndex, int endIndex)
+        {
+            try
+            {
+                for (var index = startIndex; index < endIndex; index++)
+                {
+                    var hittingSet = filteredHittingSet[index];
+                    var oppositeSet = GetOppositeComponenetsList(_observation.TheModel.Components, hittingSet);
+                    var isConsistent = Solver.CheckConsistensy(_observation, oppositeSet);
+                    if (!isConsistent) //it is a conflict
+                    {
+                        AddComponentToSet(_conflictsSetDataStructure, hittingSet, false);
+                    }
+                    else //it is a diagnosis
+                    {
+                        AddComponentToSet(_diagnosisesSetDataStructure, oppositeSet, true);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Can't Add Set :"+ex.Message);
             }
         }
 
@@ -199,7 +267,10 @@ namespace DiagnosisProjects.SwitchingAlgorithm
             //add to data structure while saving minimal subset
             if (minimizedSet.Count < MaxSetSize)
             {
-                sets.AddSet(minimizedSet);
+                lock (_lock)
+                {
+                    sets.AddSet(minimizedSet);
+                }
             }
         }
 
@@ -228,14 +299,14 @@ namespace DiagnosisProjects.SwitchingAlgorithm
 
     public static class TestingEnvironment
     {
-        //public static String SystemFile = "74181.txt";
-        //public static String ObservationFile = "74181_iscas85.txt";
-        //public static String DiagnosisFile = "74181_1_Diag.txt";
-        //public static int ObservationIndex = 0;
-
-        public static String SystemFile = "777.txt";
-        public static String ObservationFile = "777_iscas85.txt";
-        public static String DiagnosisFile = "777_1_Diag.txt";
+        public static String SystemFile = "74181.txt";
+        public static String ObservationFile = "74181_iscas85.txt";
+        public static String DiagnosisFile = "74181_1_Diag.txt";
         public static int ObservationIndex = 0;
+
+        //public static String SystemFile = "777.txt";
+        //public static String ObservationFile = "777_iscas85.txt";
+        //public static String DiagnosisFile = "777_1_Diag.txt";
+        //public static int ObservationIndex = 0;
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq.Expressions;
 using DiagnosisProjects.SwitchingAlgorithm.SubSetMinimal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -75,5 +76,54 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
             Assert.AreEqual(diagnosiSetsDataStructure.SetIdsToSet.Count, diagnosisSet.Count);
            
         }
+
+         [TestMethod]
+        public void TestComapreSimpleDateStructureAndCompSetTree()
+         {
+             const int numOfSets = 10000;
+             var rand = new Random();
+             var diagnosises = new List<Diagnosis>();
+             var id = 1;
+             for (var j = 0; j < numOfSets; j++)
+             {
+                 var numOfGates = rand.Next(1, 100);
+                 var diagnosis = new Diagnosis();
+                 for (var i = 0; i < numOfGates; i++)
+                 {
+                     Gate gate = new MultipleInputComponent(id, Gate.Type.and);
+                     diagnosis.AddCompToDiagnosis(gate);
+                     id++;
+                 }
+                 diagnosises.Add(diagnosis);
+             }
+
+             var diagnosiSetsDataStructure = new SetsDataStructure("Diagnosis");
+             var diagnosisesTree = new CompSetTree.CompSetTree();
+
+             var sw = new Stopwatch();
+             sw.Start();
+             foreach (var diagnosise in diagnosises)
+             {
+                 diagnosiSetsDataStructure.AddSet(diagnosise.TheDiagnosis);
+             }
+             sw.Stop();
+             var timeSpan1 = sw.Elapsed; sw.Start();
+             sw.Reset();
+             sw.Start();
+             foreach (var diagnosise in diagnosises)
+             {
+                 diagnosisesTree.AddSet(diagnosise.TheDiagnosis);
+             }
+             sw.Stop();
+             var timeSpan2 = sw.Elapsed; sw.Start();
+             sw.Reset();
+             var count1 = diagnosiSetsDataStructure.GetCompSets().Count;
+             var count2 = diagnosisesTree.GetAllCompsSets().Count;
+             Debug.WriteLine("Simple Data Structure Time: "+timeSpan1+", Comp Tree Time: "+timeSpan2);
+             Assert.AreEqual(count1, count2);
+             Assert.IsTrue(timeSpan2 < timeSpan1);
+         }
     }
+
+
 }
