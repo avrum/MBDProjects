@@ -27,8 +27,8 @@ namespace DiagnosisProjects.SwitchingAlgorithm
         public static Dictionary<int, Gate> IdToGates = new Dictionary<int, Gate>();
 
         public static ConstraintSystemSolverMock Solver = ConstraintSystemSolverMock.getInstance();
-        private const int RequiredNumOfHittinSets = 10000;
         //public static ConstraintSystemSolver Solver = ConstraintSystemSolver.Instance;
+        private const int RequiredNumOfHittinSets = 10000;
         private readonly Object _lock = new Object();
         public SwitchingAlgorithm(Observation observation, ConflictSet initialConflictsSet, DiagnosisSet initialDiagnosisSet, int requiredNumOfDiagnosis)
         {
@@ -88,6 +88,7 @@ namespace DiagnosisProjects.SwitchingAlgorithm
             var steps = 0;
             while (!_isTimeOut && isNewSetsFound && (diagnosisCount < _requiredNumOfDiagnosis))
             {
+                Debug.WriteLine("Step: "+steps+", Diagnosis Count: "+diagnosisCount+", Conflicts Count: "+conflictsCount);
                 steps++;
                 FindDiagnosisFromConflicts();
                 FindConflictsFromDiagnosis();
@@ -299,14 +300,14 @@ namespace DiagnosisProjects.SwitchingAlgorithm
 
     public static class TestingEnvironment
     {
-        public static String SystemFile = "74181.txt";
-        public static String ObservationFile = "74181_iscas85.txt";
-        public static String DiagnosisFile = "74181_1_Diag.txt";
-        public static int ObservationIndex = 0;
-
-        //public static String SystemFile = "777.txt";
-        //public static String ObservationFile = "777_iscas85.txt";
-        //public static String DiagnosisFile = "777_1_Diag.txt";
+        //public static String SystemFile = "74181.txt";
+        //public static String ObservationFile = "74181_iscas85.txt";
+        //public static String DiagnosisFile = "74181_1_Diag.txt";
         //public static int ObservationIndex = 0;
+
+        public static String SystemFile = "777.txt";
+        public static String ObservationFile = "777_iscas85.txt";
+        public static String DiagnosisFile = "777_1_Diag.txt";
+        public static int ObservationIndex = 0;
     }
 }

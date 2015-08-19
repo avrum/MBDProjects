@@ -65,7 +65,7 @@ namespace DiagnosisProjects.SwitchingAlgorithm.UnitTesting
         [TestMethod]
         public void TestfindFirtDiagnosisHaltByTime()
         {
-            const int timeOut = 5 * 60 * 1000;
+            const int timeOut = 20 * 60 * 1000;
             const int epsilon = timeOut/5; //error margin if timer is called in the begining of the while loop
             
             var mockDiagnosisList = ConstraintSystemSolverMock.getInstance().GetDiagnosisSet();
