@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace DiagnosisProjects
 {
-    abstract class Gate : IComparable<Gate>
+    public abstract class Gate : IComparable<Gate>
     {
         public int Id { get; protected set; }
         public int order { get; set; }
-        public double P { get; set; }
+        public double P { get; set; } // pre determined probability for fault
         public double Cost { get; set; }
-        public bool IsBroken { get; set; } // needed for the SAT - consistency test
+        public bool IsNotHealthy { get; set; } // needed for the SAT - consistency test
         public enum Type {and, or, xor, nxor, nor, nand, buffer, not, cone}
-        protected Type type;
+        public Type type;
         private Wire output;
         public virtual Wire Output {
             get
@@ -38,6 +38,9 @@ namespace DiagnosisProjects
             this.Cost = cost;
             this.P = p;
         }
+        public virtual List<Wire> getInput() { return null; }
+
+
         public virtual bool GetValue() { return Output.Value; }
 
         /*virtual - cone */

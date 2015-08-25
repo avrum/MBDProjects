@@ -34,7 +34,7 @@ namespace DiagnosisProjects.HittingSet
             List<HSTreeNode> newNodes = new List<HSTreeNode>();
 
             List<HSTreeNode> nodesToExpand = HSHelper.ConvertConflictSetToNodes(conflicts);
-            nodesToExpand.RemoveAt(1);
+            //nodesToExpand.RemoveAt(1);
 
             //Not sure if this should be empty or not....
             //conflicts = new ConflictSet();
@@ -72,6 +72,14 @@ namespace DiagnosisProjects.HittingSet
 
 
                 size = nodesToExpand.Count;
+
+
+                if (size - lastSize > 3000)
+                {
+                    Debug.WriteLine("Nodes to expand over 3000! ignore this obs");
+                    return diagnosisSet;
+                }
+
             }
 
             return diagnosisSet;

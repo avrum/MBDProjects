@@ -36,6 +36,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>HittingSet\Solver\Microsoft.Solver.Foundation.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -45,9 +46,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompSet.cs" />
     <Compile Include="Cone.cs" />
     <Compile Include="Conflict.cs" />
     <Compile Include="ConflictSet.cs" />
+    <Compile Include="HittingSet\Algorithms\A_MinCAlgorithm.cs" />
+    <Compile Include="HittingSet\Algorithms\BB_MinCAlgorithm.cs" />
+    <Compile Include="HittingSet\Algorithms\C_MinCAlgorithm.cs" />
+    <Compile Include="HittingSet\Algorithms\E_MinCAlgorithm.cs" />
+    <Compile Include="HittingSet\Algorithms\IMinCAlgorithm.cs" />
+    <Compile Include="HittingSet\Algorithms\MicC_Diagnosis.cs" />
+    <Compile Include="HittingSet\Algorithms\MinC_Utils.cs" />
+    <Compile Include="HittingSet\Algorithms\R_MinCAlgorithm.cs" />
+    <Compile Include="HittingSet\HittingSetStatistics.cs" />
+    <Compile Include="HittingSet\HittingSetTester.cs" />
+    <Compile Include="HittingSet\Solver\ConstraintSystemSolverLocker.cs" />
     <Compile Include="HittingSet\Solver\ConstraintSystemSolver.cs" />
     <Compile Include="Diagnosis.cs" />
     <Compile Include="DiagnosisSet.cs" />
@@ -61,31 +74,141 @@
     <Compile Include="HittingSet\HittingSetFinder.cs" />
     <Compile Include="HittingSet\HSTreePath.cs" />
     <Compile Include="HittingSet\HSTreeNode.cs" />
+    <Compile Include="HittingSet\Unittests\A_MinC\A_MinCUnittest_1.cs" />
+    <Compile Include="HittingSet\Unittests\A_MinC\A_MinCUnittest_2.cs" />
+    <Compile Include="HittingSet\Unittests\BB_MinC\BB_MinCUnittest_1.cs" />
+    <Compile Include="HittingSet\Unittests\BB_MinC\BB_MinCUnittest_2.cs" />
+    <Compile Include="HittingSet\Unittests\C_MinC\C_MinCUnittest_1.cs" />
+    <Compile Include="HittingSet\Unittests\C_MinC\C_MinCUnittest_2.cs" />
+    <Compile Include="HittingSet\Unittests\E_MinC\E_MinCUnittest_1.cs" />
+    <Compile Include="HittingSet\Unittests\E_MinC\E_MinCUnittest_2.cs" />
+    <Compile Include="HittingSet\Unittests\HSUnittest_3.cs" />
     <Compile Include="HittingSet\Unittests\HSUnittest_2.cs" />
     <Compile Include="HittingSet\Unittests\HSUnittest_1.cs" />
+    <Compile Include="HittingSet\Unittests\R_MinC\R_MinCUnittest_1.cs" />
+    <Compile Include="HittingSet\Unittests\R_MinC\R_MinCUnittest_2.cs" />
     <Compile Include="IDiagnoser.cs" />
+    <Compile Include="LTMS\Atomic.cs" />
+    <Compile Include="LTMS\Clouse.cs" />
+    <Compile Include="LTMS\Cnf.cs" />
+    <Compile Include="LTMS\LtmsAlgorithm.cs" />
     <Compile Include="ModelObservationCreator.cs" />
     <Compile Include="MultipleInputGate.cs" />
     <Compile Include="Observation.cs" />
     <Compile Include="OneInputGate.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Safari\DiagnosisTools.cs" />
-    <Compile Include="Safari\HillClimb.cs" />
-    <Compile Include="Safari\IPrefixMatcher.cs" />
-    <Compile Include="Safari\PrefixMatcher.cs" />
-    <Compile Include="Safari\Trie.cs" />
-    <Compile Include="Safari\TrieNode.cs" />
+    <Compile Include="Sets.cs" />
+    <Compile Include="SwitchingAlgorithm\CompSetTree\CompSetNode.cs" />
+    <Compile Include="SwitchingAlgorithm\CompSetTree\CompSetTree.cs" />
+    <Compile Include="SwitchingAlgorithm\ConstraintSystemSolverMock.cs" />
+    <Compile Include="SwitchingAlgorithm\HittingSet\SwitchingAlgorithmHittingSetFinder.cs" />
+    <Compile Include="SwitchingAlgorithm\SetMinimizer\MinimizerComponent.cs" />
+    <Compile Include="SwitchingAlgorithm\SetMinimizer\SetMinimizer.cs" />
+    <Compile Include="SwitchingAlgorithm\SubSetMinimal\SetsDataStructure.cs" />
+    <Compile Include="SwitchingAlgorithm\SwitchingAlgorithm.cs" />
+    <Compile Include="SwitchingAlgorithm\SwitchingDiagnosticEngine.cs" />
+    <Compile Include="SwitchingAlgorithm\UnitTesting\CompSetTreeTest.cs" />
+    <Compile Include="SwitchingAlgorithm\UnitTesting\HittingSetFinderTest.cs" />
+    <Compile Include="SwitchingAlgorithm\UnitTesting\SetMinimizerTest.cs" />
+    <Compile Include="SwitchingAlgorithm\UnitTesting\SwitchingAlgorithmTest.cs" />
+    <Compile Include="SwitchingAlgorithm\UnitTesting\SetsDataStructureTest.cs" />
     <Compile Include="SystemModel.cs" />
     <Compile Include="Wire.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="SystemFiles\74181.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\74181_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\74182.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\74182_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\74283.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\74283_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c1355.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c1355_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c17.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c17_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c1908.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c1908_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c2670.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c2670_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c3540.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c3540_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c432.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c432_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c499.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c499_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c5315.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c5315_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c6288.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c6288_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c7552.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c7552_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c880.sys">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SystemFiles\c880_iscas85.obs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="HittingSet\Solver\Microsoft.Solver.Foundation.dll" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

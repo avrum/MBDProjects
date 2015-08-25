@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace DiagnosisProjects
 {
-    class Observation
+    public class Observation
     {
         public int Id { get; private set; }
         public bool[] InputValues { get; set; }
         public bool[] OutputValues { get; set; }
         public Dictionary<Wire, bool> CorrectValues { get; private set; }
         private SystemModel model;
-        public SystemModel TheModel 
+        public SystemModel TheModel
         { 
             get
             {

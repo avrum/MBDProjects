@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,7 +8,7 @@ using Microsoft.SolverFoundation.Solvers;
 
 namespace DiagnosisProjects
 {
-    class MultipleInputComponent:Gate
+    public class MultipleInputComponent:Gate
     {
         public List<Wire> Input;
 
@@ -16,6 +17,12 @@ namespace DiagnosisProjects
             Input.Add(wire);
             wire.AddOutputComponent(this);
         }
+
+        public override List<Wire> getInput()
+        {
+            return this.Input;
+        }
+
         public MultipleInputComponent(int id, Type type)
         {
             this.Id = id;
@@ -68,6 +75,16 @@ namespace DiagnosisProjects
                     if (t % 2 == 0)
                         return false;
                     return true;
+                case Type.nxor:
+                    t=0;
+                    foreach (Wire wire in Input)
+                    {
+                        if (wire.Value == true)
+                            t++;
+                    }
+                    if (t % 2 == 0)
+                        return true;
+                    return false;
             }
             return false;
 
@@ -81,14 +98,18 @@ namespace DiagnosisProjects
             CspTerm[] inputTerms = new CspTerm[Input.Count];
             for (int i = 0; i < Input.Count; i++)
             {
-                inputTerms[i] = Input[i].GetTerm();
+                inputTerms[i] = Input[i].CspTerm;
             }
 
-            CspTerm outputTerm = Output.GetTerm();
+            CspTerm outputTerm = Output.CspTerm;
 
             Type consType = type;
-            if (IsBroken)
+            if (IsNotHealthy)
             {
+                // In case the gate is Broken (Not Healthy) - we don't want to add any constraint!!!
+                return;
+
+                /*
                 switch (type)
                 {
                     case Type.and:
@@ -110,49 +131,55 @@ namespace DiagnosisProjects
                         consType = Type.xor;
                         break;
                 }
+                */
             }
 
-            switch (consType)
+            lock (ConstraintSystemSolver.Instance.Locker)
             {
-                case Type.and:
-                    CspTerm allAndInputs = solver.And(inputTerms);
-                    constraint = solver.Equal(allAndInputs, outputTerm);
-                    break;
-                case Type.nand:
-                    CspTerm allNandInputs = solver.And(inputTerms);
-                    constraint = solver.Equal(allNandInputs, solver.Not(outputTerm));
-                    break;
-                case Type.nor:
-                    CspTerm allNorInputs = solver.Or(inputTerms);
-                    constraint = solver.Equal(allNorInputs, solver.Not(outputTerm));
-                    break;
-                case Type.or:
-                    CspTerm allOrInputs = solver.Or(inputTerms);
-                    constraint = solver.Equal(allOrInputs, outputTerm);
-                    break;
-                case Type.xor:
-                    //XOR is also:
-                    //http://en.wikipedia.org/wiki/XOR_gate#/media/File:254px_3gate_XOR.jpg
+                //Debug.WriteLine("SAT IN!");
+                switch (consType)
+                {
+                    case Type.and:
+                        CspTerm allAndInputs = solver.And(inputTerms);
+                        constraint = solver.Equal(allAndInputs, outputTerm);
+                        break;
+                    case Type.nand:
+                        CspTerm allNandInputs = solver.And(inputTerms);
+                        constraint = solver.Equal(allNandInputs, solver.Not(outputTerm));
+                        break;
+                    case Type.nor:
+                        CspTerm allNorInputs = solver.Or(inputTerms);
+                        constraint = solver.Equal(allNorInputs, solver.Not(outputTerm));
+                        break;
+                    case Type.or:
+                        CspTerm allOrInputs = solver.Or(inputTerms);
+                        constraint = solver.Equal(allOrInputs, outputTerm);
+                        break;
+                    case Type.xor:
+                        //XOR is also:
+                        //http://en.wikipedia.org/wiki/XOR_gate#/media/File:254px_3gate_XOR.jpg
 
-                    CspTerm firstNand = solver.Not(solver.And(inputTerms));
-                    CspTerm firstOr = solver.Or(inputTerms);
-                    CspTerm secendAnd = solver.And(firstNand, firstOr);
+                        CspTerm firstNand = solver.Not(solver.And(inputTerms));
+                        CspTerm firstOr = solver.Or(inputTerms);
+                        CspTerm secendAnd = solver.And(firstNand, firstOr);
 
-                    constraint = solver.Equal(secendAnd, outputTerm);
-                    break;
-                case Type.nxor:
-                    //XOR is also:
-                    //http://en.wikipedia.org/wiki/XOR_gate#/media/File:254px_3gate_XOR.jpg
+                        constraint = solver.Equal(secendAnd, outputTerm);
+                        break;
+                    case Type.nxor:
+                        //XOR is also:
+                        //http://en.wikipedia.org/wiki/XOR_gate#/media/File:254px_3gate_XOR.jpg
 
-                    CspTerm firstNand2 = solver.Not(solver.And(inputTerms));
-                    CspTerm firstOr2 = solver.Or(inputTerms);
-                    CspTerm secendAnd2 = solver.And(firstNand2, firstOr2);
+                        CspTerm firstNand2 = solver.Not(solver.And(inputTerms));
+                        CspTerm firstOr2 = solver.Or(inputTerms);
+                        CspTerm secendAnd2 = solver.And(firstNand2, firstOr2);
 
-                    constraint = solver.Equal(secendAnd2, solver.Not(outputTerm));
-                    break;
+                        constraint = solver.Equal(secendAnd2, solver.Not(outputTerm));
+                        break;
+               }
+
+                solver.AddConstraints(constraint);
+                //Debug.WriteLine("SAT OUT!");
             }
-
-            solver.AddConstraints(constraint);
         }
     }
 }
