@@ -48,7 +48,7 @@ namespace DiagnosisProjects
         {
             this.Id = id;
             this.Type = type;
-            this.term = ConstraintSystemSolver.Instance.Solver.CreateBoolean(id);
+            //this.term = ConstraintSystemSolver.Instance.Solver.CreateBoolean(id);
         }
         public void AddOutputComponent(Gate Component)
         {

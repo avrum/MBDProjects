@@ -70,6 +70,12 @@
     <Compile Include="OneInputGate.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Safari\DiagnosisTools.cs" />
+    <Compile Include="Safari\HillClimb.cs" />
+    <Compile Include="Safari\IPrefixMatcher.cs" />
+    <Compile Include="Safari\PrefixMatcher.cs" />
+    <Compile Include="Safari\Trie.cs" />
+    <Compile Include="Safari\TrieNode.cs" />
     <Compile Include="SystemModel.cs" />
     <Compile Include="Wire.cs" />
   </ItemGroup>
@@ -79,6 +85,7 @@
   <ItemGroup>
     <Content Include="HittingSet\Solver\Microsoft.Solver.Foundation.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

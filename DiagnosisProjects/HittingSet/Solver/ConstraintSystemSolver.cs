@@ -9,7 +9,7 @@ namespace DiagnosisProjects
 {
     class ConstraintSystemSolver
     {
-        private static ConstraintSystemSolver instance;
+        public static ConstraintSystemSolver instance;
         public ConstraintSystem Solver { get; private set; }
 
         public static ConstraintSystemSolver Instance
@@ -25,7 +25,7 @@ namespace DiagnosisProjects
             }
         }
 
-        private ConstraintSystemSolver()
+        public ConstraintSystemSolver()
         {
             Solver = ConstraintSystem.CreateSolver();
         }
