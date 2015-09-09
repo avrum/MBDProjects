@@ -10,7 +10,7 @@ namespace DiagnosisProjects
 {
     class ConstraintSystemSolver
     {
-        private static ConstraintSystemSolver instance;
+        public static ConstraintSystemSolver instance;
         public ConstraintSystem Solver { get; private set; }
         public object Locker = ConstraintSystemSolverLocker.Locker;
         private static Dictionary<Wire, CspTerm> wireTermsDictionary;
@@ -29,7 +29,7 @@ namespace DiagnosisProjects
             }
         }
 
-        private ConstraintSystemSolver()
+        public ConstraintSystemSolver()
         {
             Solver = ConstraintSystem.CreateSolver();
         }
