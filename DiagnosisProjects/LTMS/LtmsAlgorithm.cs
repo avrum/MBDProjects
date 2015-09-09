@@ -25,12 +25,12 @@ namespace DiagnosisProjects.LTMS
         /*
         * findConflicts return  List<List<Gate>> , each  item List<Gate>  is list of Gate is a conflict
         * */
-        public List<List<Gate>> findConflicts()
+        public List<List<Gate>> findConflicts(int suffle)
         {
             DateTime startTime = DateTime.Now;
-            check_conflicts();
+            check_conflicts(suffle);
             DateTime endTime = DateTime.Now;
-            
+            Console.Write(endTime - startTime);
             List<List<Gate>> conf_gates = new List<List<Gate>>();
             foreach (Clouse c in this.conflicts){
                 List<Gate> conf=build_conf_list(c.supporting,new List<Gate>());
@@ -59,7 +59,7 @@ namespace DiagnosisProjects.LTMS
         /*
         * check_conflicts implement the ltms algorithm and build this .conflicts by check for conflicts in the cnf 
         * */
-        private void check_conflicts() 
+        private void check_conflicts(int suffle) 
         {
             int len;
             while (true)
@@ -90,7 +90,8 @@ namespace DiagnosisProjects.LTMS
                 len = this.fringe.Count;
                 if (len > 0)
                 {
-                    ShuffleFringe();
+                    if (suffle==1)
+                        ShuffleFringe();
                     foreach (Clouse c in this.fringe)
                     {
                         Atomic atom = c.unknown_literals[0];
